@@ -1,0 +1,309 @@
+{% liquid
+  capture product_context
+    echo product.title
+    echo ' '
+    echo product.type
+    echo ' '
+    echo product.vendor
+    echo ' '
+    echo product.tags | join: ' '
+  endcapture
+  assign product_context = product_context | downcase
+
+  assign category_label = 'Little everyday essential'
+  assign story_heading = 'Made to feel thoughtful in every nursery routine'
+  assign story_intro = 'This product page is designed to support the buying decision with comfort cues, fit notes, and a calmer visual hierarchy.'
+  assign highlight_title = 'Why parents keep reaching for it'
+  assign highlight_value = 'Soft, simple, everyday confidence'
+  assign highlight_copy = 'A polished detail section helps parents scan what matters fast, from feel to fit to delivery expectations.'
+  assign story_image = 'kids-collection-hero.jpg'
+  assign feature_1_title = 'Comfort-led build'
+  assign feature_1_text = 'Soft-touch materials and a gentle finish create an elevated first impression.'
+  assign feature_2_title = 'Practical routine'
+  assign feature_2_text = 'Everything is merchandised to feel easy to understand, compare, and add to cart.'
+  assign feature_3_title = 'Giftable presentation'
+  assign feature_3_text = 'Warm visuals and calmer copy make the product page feel premium without feeling clinical.'
+  assign list_title = 'Helpful details'
+  assign list_1 = 'Designed for everyday comfort and easy repeat purchases.'
+  assign list_2 = 'Clear visual rhythm keeps key buying information easy to scan.'
+  assign list_3 = 'Pairs naturally with the same calm merchandising language across collections.'
+  assign care_title = 'Parent-ready notes'
+  assign care_text = 'Free shipping messaging, routine-friendly copy, and an editorial layout all help this page feel more trustworthy.'
+
+  if product_context contains 'diaper' or product_context contains 'nappy'
+    assign category_label = 'Diapering essential'
+    assign story_heading = 'Soft absorbency, clean communication, and more confidence at checkout'
+    assign story_intro = 'For diaper products, parents want reassurance quickly: dryness, softness, fit, and how it works in a real daily routine.'
+    assign highlight_title = 'What this layout emphasizes'
+    assign highlight_value = 'Dry comfort and gentle touch'
+    assign highlight_copy = 'The page now frames diaper products with breathable language, care cues, and softer visual treatment to feel more premium.'
+    assign story_image = 'kids-diaper-cactus.jpg'
+    assign feature_1_title = 'Dry-feel confidence'
+    assign feature_1_text = 'Highlights absorbency and comfort instead of leaving parents to search the description for basics.'
+    assign feature_2_title = 'Gentle skin story'
+    assign feature_2_text = 'Supports a softer, more baby-safe perception with calm color, copy, and spacing.'
+    assign feature_3_title = 'Bundle-friendly flow'
+    assign feature_3_text = 'Makes repeat-buy diaper essentials feel polished enough for everyday replenishment.'
+    assign list_title = 'Parents usually want to know'
+    assign list_1 = 'How soft it feels around the waist and legs.'
+    assign list_2 = 'Whether it looks breathable enough for all-day wear.'
+    assign list_3 = 'If the page makes sizing, routine use, and reorder confidence obvious.'
+    assign care_title = 'Merchandising note'
+    assign care_text = 'Diapers perform better on the page when softness, absorbency, and routine ease are presented before longer body copy.'
+  elsif product_context contains 'sock'
+    assign category_label = 'Tiny-foot essential'
+    assign story_heading = 'Cozy texture, secure fit, and a sweeter way to merchandise baby socks'
+    assign story_intro = 'For baby socks, the page should answer the emotional buy as much as the practical one: softness, stay-put fit, and giftable charm.'
+    assign highlight_title = 'What this layout emphasizes'
+    assign highlight_value = 'Warm comfort and stay-put fit'
+    assign highlight_copy = 'The layout gives sock products a boutique feel with visual warmth, lighter detail cards, and a more intentional narrative.'
+    assign story_image = 'kids-socks-flatlay.jpg'
+    assign feature_1_title = 'Soft knit story'
+    assign feature_1_text = 'Frames the product as a cozy, giftable essential instead of a generic apparel add-on.'
+    assign feature_2_title = 'Stay-on reassurance'
+    assign feature_2_text = 'Gives parents quick cues around stretch, cuff comfort, and everyday wearability.'
+    assign feature_3_title = 'Boutique presentation'
+    assign feature_3_text = 'Balances warmth and clarity so the product feels premium enough for gifting and stocking up.'
+    assign list_title = 'Parents usually want to know'
+    assign list_1 = 'Whether the cuff stays on without feeling too tight.'
+    assign list_2 = 'If the fabric feels breathable enough for all-day wear.'
+    assign list_3 = 'How easily the product fits into gifting, bundling, or daily rotation.'
+    assign care_title = 'Merchandising note'
+    assign care_text = 'Baby sock pages convert better when the visual mood feels warm and tactile, with fit and softness cues surfaced early.'
+  endif
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<section
+  class="section section--page-width kids-product-story color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="kids-product-story__layout">
+    <div class="kids-product-story__visual">
+      <div class="kids-product-story__image-wrap">
+        <img
+          src="{{ story_image | asset_url }}"
+          alt="{{ product.title }}"
+          width="1600"
+          height="1068"
+          loading="lazy"
+        >
+      </div>
+      <div class="kids-product-story__floating-card">
+        <span>{{ highlight_title }}</span>
+        <strong>{{ highlight_value }}</strong>
+        <p>{{ highlight_copy }}</p>
+      </div>
+    </div>
+
+    <div class="kids-product-story__content">
+      <span class="kids-product-story__eyebrow">{{ category_label }}</span>
+      <h2>{{ story_heading }}</h2>
+      <p class="kids-product-story__intro">{{ story_intro }}</p>
+
+      <div class="kids-product-story__features">
+        <article class="kids-product-story__feature">
+          <h3>{{ feature_1_title }}</h3>
+          <p>{{ feature_1_text }}</p>
+        </article>
+        <article class="kids-product-story__feature">
+          <h3>{{ feature_2_title }}</h3>
+          <p>{{ feature_2_text }}</p>
+        </article>
+        <article class="kids-product-story__feature">
+          <h3>{{ feature_3_title }}</h3>
+          <p>{{ feature_3_text }}</p>
+        </article>
+      </div>
+
+      <div class="kids-product-story__details">
+        <div class="kids-product-story__detail-card">
+          <h3>{{ list_title }}</h3>
+          <ul>
+            <li>{{ list_1 }}</li>
+            <li>{{ list_2 }}</li>
+            <li>{{ list_3 }}</li>
+          </ul>
+        </div>
+        <div class="kids-product-story__detail-card">
+          <h3>{{ care_title }}</h3>
+          <p>{{ care_text }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .kids-product-story {
+    display: grid;
+  }
+
+  .kids-product-story__layout {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+  }
+
+  .kids-product-story__visual {
+    position: relative;
+  }
+
+  .kids-product-story__image-wrap {
+    overflow: hidden;
+    border-radius: 32px;
+    min-height: 100%;
+    background:
+      radial-gradient(circle at top left, rgb(255 255 255 / 0.72), transparent 40%),
+      #f4ebe2;
+    box-shadow: 0 24px 60px rgb(25 25 20 / 0.12);
+  }
+
+  .kids-product-story__image-wrap img {
+    width: 100%;
+    height: 100%;
+    min-height: 22rem;
+    object-fit: cover;
+  }
+
+  .kids-product-story__floating-card {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: -2rem;
+    margin-inline: 1rem;
+    padding: 1.1rem 1.2rem;
+    border-radius: 24px;
+    background: rgb(var(--color-background-rgb) / 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    box-shadow: 0 14px 30px rgb(20 18 14 / 0.08);
+  }
+
+  .kids-product-story__floating-card span,
+  .kids-product-story__eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.62);
+  }
+
+  .kids-product-story__floating-card strong {
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
+
+  .kids-product-story__floating-card p,
+  .kids-product-story__feature p,
+  .kids-product-story__detail-card p,
+  .kids-product-story__intro {
+    margin: 0;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    line-height: 1.7;
+  }
+
+  .kids-product-story__content h2 {
+    margin: 0.55rem 0 0;
+    font-size: clamp(2rem, 3vw, 3.35rem);
+    line-height: 0.98;
+    max-width: 14ch;
+  }
+
+  .kids-product-story__intro {
+    margin-top: 1rem;
+    max-width: 42rem;
+  }
+
+  .kids-product-story__features,
+  .kids-product-story__details {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .kids-product-story__feature,
+  .kids-product-story__detail-card {
+    padding: 1.15rem 1.2rem;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgb(var(--color-background-rgb) / 0.96), rgb(var(--color-background-rgb) / 0.88));
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+  }
+
+  .kids-product-story__feature h3,
+  .kids-product-story__detail-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+
+  .kids-product-story__detail-card ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    line-height: 1.7;
+  }
+
+  @media screen and (min-width: 750px) {
+    .kids-product-story__features {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .kids-product-story__details {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .kids-product-story__layout {
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    }
+
+    .kids-product-story__floating-card {
+      position: absolute;
+      inset: auto 1.4rem 1.4rem auto;
+      max-width: 18rem;
+      margin: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kids Product Story",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kids Product Story"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,388 @@
+{% liquid
+  assign heading = section.settings.heading | strip
+  assign description = section.settings.description | strip
+  assign eyebrow = section.settings.eyebrow | strip
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<section
+  class="section section--{{ section.settings.section_width }} kids-quick-links color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {% if eyebrow != blank or heading != blank or description != blank %}
+    <div class="kids-quick-links__header">
+      {% if eyebrow != blank %}
+        <p class="kids-quick-links__eyebrow">{{ eyebrow }}</p>
+      {% endif %}
+      {% if heading != blank %}
+        <h2 class="kids-quick-links__heading">{{ heading }}</h2>
+      {% endif %}
+      {% if description != blank %}
+        <div class="kids-quick-links__description rte">
+          {{ description }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="kids-quick-links__grid">
+    {% for block in section.blocks %}
+      {% liquid
+        assign fallback_letter = block.settings.title | default: 'S' | strip | slice: 0, 1 | upcase
+        assign block_link = block.settings.link | default: routes.all_products_collection_url
+      %}
+      <article
+        class="kids-quick-links__card"
+        {{ block.shopify_attributes }}
+      >
+        <a
+          class="kids-quick-links__link"
+          href="{{ block_link }}"
+          aria-label="{{ block.settings.title | default: 'Shop category' }}"
+        ></a>
+
+        <div class="kids-quick-links__media">
+          {% if block.settings.image != blank %}
+            {{
+              block.settings.image
+              | image_url: width: 720
+              | image_tag:
+                widths: '320, 480, 640, 720',
+                sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+                loading: 'lazy',
+                class: 'kids-quick-links__image',
+                alt: block.settings.image.alt
+            }}
+          {% else %}
+            <div class="kids-quick-links__placeholder" aria-hidden="true">
+              <span>{{ fallback_letter }}</span>
+            </div>
+          {% endif %}
+
+          {% if block.settings.badge != blank %}
+            <span class="kids-quick-links__badge">{{ block.settings.badge }}</span>
+          {% endif %}
+        </div>
+
+        <div class="kids-quick-links__content">
+          <h3 class="kids-quick-links__title">{{ block.settings.title }}</h3>
+          {% if block.settings.text != blank %}
+            <p class="kids-quick-links__text">{{ block.settings.text }}</p>
+          {% endif %}
+          <span class="kids-quick-links__cta">
+            {{ block.settings.cta_label | default: 'Shop now' }}
+          </span>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .kids-quick-links {
+    background: #fffdf8;
+    border: 1px solid rgb(111 140 111 / 0.12);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 44px rgb(61 78 61 / 0.08);
+    row-gap: clamp(1.25rem, 2vw, 2rem);
+  }
+
+  .kids-quick-links__header {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 44rem;
+    text-align: center;
+  }
+
+  .kids-quick-links__eyebrow {
+    margin: 0;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .kids-quick-links__heading {
+    margin: 0;
+    font-size: clamp(1.9rem, 3vw, 2.8rem);
+    line-height: 1;
+  }
+
+  .kids-quick-links__description > * {
+    margin: 0;
+    color: rgb(var(--color-foreground-rgb) / 0.74);
+  }
+
+  .kids-quick-links__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .kids-quick-links__card {
+    position: relative;
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    min-height: 100%;
+    background: #fffaf3;
+    border: 1px solid rgb(111 140 111 / 0.12);
+    border-radius: 20px;
+    box-shadow: 0 10px 24px rgb(61 78 61 / 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .kids-quick-links__link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .kids-quick-links__media {
+    position: relative;
+    aspect-ratio: 1 / 0.92;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e0ead9, #f5ecdd);
+  }
+
+  .kids-quick-links__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .kids-quick-links__placeholder {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: #5a7862;
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    line-height: 1;
+  }
+
+  .kids-quick-links__badge {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    padding: 0.45rem 0.7rem;
+    background: rgb(255 251 245 / 0.92);
+    color: #567160;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .kids-quick-links__content {
+    display: grid;
+    gap: 0.45rem;
+    align-content: space-between;
+    min-height: 7.5rem;
+  }
+
+  .kids-quick-links__title,
+  .kids-quick-links__text {
+    margin: 0;
+  }
+
+  .kids-quick-links__title {
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+
+  .kids-quick-links__text {
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    line-height: 1.45;
+  }
+
+  .kids-quick-links__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: fit-content;
+    margin-top: 0.35rem;
+    color: #5b7562;
+    border-bottom: 1px solid rgb(91 117 98 / 0.24);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .kids-quick-links__card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 36px rgb(61 78 61 / 0.14);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .kids-quick-links__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .kids-quick-links__header {
+      text-align: left;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kids quick links",
+  "tag": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Category card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Baby clothes"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Description",
+          "default": "Soft staples made for naps, crawls, and first adventures."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "CTA label",
+          "default": "Shop now"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page"
+        },
+        {
+          "value": "full-width",
+          "label": "Full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Shop by need"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Explore the little essentials parents reach for first"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Use these shortcut cards to guide shoppers into the right product type faster, especially on mobile.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kids quick links",
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "badge": "Everyday",
+            "title": "Baby clothes",
+            "text": "Cozy rompers, tees, and matching sets that feel gentle all day."
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "badge": "Best sellers",
+            "title": "Booties",
+            "text": "Soft first-step favorites with easy-on fits for busy mornings."
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "badge": "Meal time",
+            "title": "Bibs and blankets",
+            "text": "Practical comfort pieces that help parents move from nap to snack time."
+          }
+        },
+        "card_4": {
+          "type": "card",
+          "settings": {
+            "badge": "Fresh edit",
+            "title": "New arrivals",
+            "text": "See the newest colors, prints, and giftable pieces in one quick stop."
+          }
+        }
+      },
+      "block_order": ["card_1", "card_2", "card_3", "card_4"]
+    }
+  ]
+}
+{% endschema %}
