@@ -1,28 +1,25 @@
-{% assign block_settings = block.settings %}
-{% if product == blank and card_product != blank %}
-  {% assign product = card_product %}
-{% endif %}
 
-<div class="product-card">
-  <a href="{{ product.url }}">
-    <div class="product-card__image">
-      {% if product.featured_image %}
-        <img 
-          src="{{ product.featured_image | image_url: width: 400 }}" 
-          alt="{{ product.title }}"
-          loading="lazy"
-        >
-      {% endif %}
-    </div>
+{% liquid
+  assign products = null
 
-    <div class="product-card__info">
-      <h3 class="product-card__title">
-        {{ product.title }}
-      </h3>
+  if section.settings.recommendation_collection != blank
+    assign collection_handle = section.settings.recommendation_collection.handle
+    assign collection_obj = collections[collection_handle]
+    
+    if collection_obj != blank
+      assign products = collection_obj.products
+    endif
 
-      <div class="product-card__price">
-        {{ product.price | money }}
-      </div>
-    </div>
-  </a>
-</div>
+  endif
+
+  if products == blank and product.collections.size > 0
+    assign fallback_collection = product.collections.first
+    assign products = collections[fallback_collection.handle].products
+  endif
+
+  if products == blank
+    assign products = collections.all.products
+  endif
+
+  assign products = products | slice: 0, section.settings.max_products
+%}

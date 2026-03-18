@@ -222,16 +222,10 @@
   endcapture
 %}
 
-<product-recommendations
+
+<div
   id="product-recommendations-{{ section.id }}"
   class="product-recommendations"
-  data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.max_products }}"
-  data-section-id="{{ section.id }}"
-  data-product-id="{{ section.settings.product.id | default: product.id }}"
-  data-intent="{{ section.settings.recommendation_type }}"
-  data-testid="product-recommendations-section"
-  data-recommendations-performed="{{ recommendations.performed }}"
-  {{ section.shopify_attributes }}
 >
   <div class="section-background color-{{ section.settings.color_scheme }}"></div>
   <div
@@ -254,65 +248,50 @@
     </div>
 
 
-    {%- if section.settings.recommendation_collection != blank or recommendations.performed or section.settings.product == blank -%}
+   <pre style="background:red;color:white;padding:10px;">
+     ===== GLOBAL DEBUG =====
+     recommendation_collection_raw: {{ section.settings.recommendation_collection }}
+     recommendation_collection_handle: {{ section.settings.recommendation_collection }}
+     collection_lookup_test: {{ collections[section.settings.recommendation_collection] }}
+     collection_title: {{ collections[section.settings.recommendation_collection].title }}
+     recommendation_collection_products: {{ collections[section.settings.recommendation_collection].products.size }}
+   </pre>
+   {%- if section.settings.recommendation_collection != blank -%}
       {% liquid
-        # Check if a collection is selected
-        if section.settings.recommendation_collection != blank
-          assign products = section.settings.recommendation_collection.products | slice: 0, section.settings.max_products
-        elsif section.settings.product == blank
-          assign products = null
-          # Onboarding mode: Show placeholder products
-          for i in (1..section.settings.max_products)
-            assign products = products | append: ', '
-            assign products = products | split: ','
-          endfor
-        elsif recommendations.performed and recommendations.products_count == 0
-          # No recommendations found, pull from catalog
-          if section.settings.recommendation_type == 'related'
-            assign products = collections.all.products | reject: 'id', section.settings.product.id
-          elsif section.settings.recommendation_type == 'complementary'
-            # Do not recommend the All collection as complementary products
-            assign products = null
-          endif
-
+        assign products = null
+        assign raw_collection = section.settings.recommendation_collection
+        if raw_collection.handle != blank
+          assign collection_handle = raw_collection.handle
         else
-          assign products = recommendations.products
+          assign collection_handle = raw_collection
         endif
+        assign collection_obj = collections[collection_handle]
+        assign products = collection_obj.products
+        assign products = products | slice: 0, section.settings.max_products
       %}
-      <pre style="background:#000;color:#0f0;padding:10px;">
-        DEBUG SECTION:
-        collection_handle: {{ section.settings.recommendation_collection.handle }}
+      <pre style="background:blue;color:white;padding:10px;">
+        ===== AFTER ASSIGN =====
+        collection_obj: {{ collection_obj }}
+        products: {{ products }}
         products_size: {{ products.size }}
-        products_raw: {{ products }}
       </pre>
-      {% capture list_items %}
-        {% for product in products limit: section.settings.max_products %}
-          <div class="resource-list__item">
-            <pre style="background:#111;color:#0f0;padding:6px;">
-              LOOP PRODUCT:
-              id: {{ product.id }}
-              title: {{ product.title }}
-            </pre>
-            {% render 'product-card', product: product, card_product: product %}
-          </div>
-          {% unless forloop.last %}
-            <!--@list/split-->
-          {% endunless %}
-        {% endfor %}
-      {% endcapture %}
 
       {% liquid
-        # Create an array from the list items to be used in the carousel
-        assign slide_content = list_items | strip
-        assign slides = slide_content | split: '<!--@list/split-->'
-
         if products != blank and products.size > 0
           assign has_recommendations = 'true'
         else
           assign has_recommendations = 'false'
         endif
       %}
+      {% assign slides = '' %}
 
+      <pre style="background:#111;color:#0ff;padding:10px;font-size:12px;">
+        ===== DEBUG COLLECTION =====
+        recommendation_collection: {{ section.settings.recommendation_collection }}
+        collection_obj: {{ collection_obj }}
+        products_raw: {{ products }}
+        products_size: {{ products.size }}
+      </pre>
       <div
         class="
           resource-list
@@ -331,8 +310,44 @@
       >
         {% case section.settings.layout_type %}
           {% when 'grid' %}
-            {{ list_items }}
+            {% for item in products %}
+              <div class="resource-list__item">
+
+                <pre style="background:#000;color:#0f0;padding:10px;font-size:12px;">
+                  ===== DEBUG PRODUCT =====
+                  item_raw: {{ item }}
+                  item_type: {{ item | json }}
+                  
+                  id: {{ item.id }}
+                  title: {{ item.title }}
+                  handle: {{ item.handle }}
+                  available: {{ item.available }}
+                  price: {{ item.price }}
+                  compare_at_price: {{ item.compare_at_price }}
+                  
+                  image: {{ item.featured_image }}
+                  url: {{ item.url }}
+
+                  collection_obj: {{ collection_obj }}
+                  products_size: {{ products.size }}
+                </pre>
+
+                {% render 'product-card', product: item, card_product: item %}
+
+              </div>
+            {% endfor %}
           {% when 'carousel' %}
+            {% assign slide_content = '' %}
+            {% for item in products %}
+              {% capture single_slide %}
+                <div class="resource-list__item">
+                  {% render 'product-card', product: item, card_product: item %}
+                </div>
+              {% endcapture %}
+              {% assign slide_content = slide_content | append: single_slide | append: '<!--@list/split-->' %}
+            {% endfor %}
+            {% assign slides = slide_content | split: '<!--@list/split-->' %}
+
             {% render 'resource-list-carousel',
               ref: 'resourceListCarousel',
               slides: slides,
@@ -378,7 +393,7 @@
       </div>
     {%- endif -%}
   </div>
-</product-recommendations>
+</div>
 
 {% schema %}
 {
