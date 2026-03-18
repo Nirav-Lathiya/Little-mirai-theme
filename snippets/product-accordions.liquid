@@ -1,0 +1,146 @@
+{% comment %}
+  Product Accordions
+  Dynamic - uses custom metafields with product.description fallback
+{% endcomment %}
+
+{% liquid
+  assign product_details_content = product.metafields.custom.product_details
+  assign shipping_returns_content = product.metafields.custom.shipping_returns
+  assign care_instructions_content = product.metafields.custom.care_instructions
+%}
+
+<div class="product-accordions">
+  <details class="product-accordion" open>
+    <summary class="product-accordion__trigger">
+      <span class="product-accordion__title">Product Details</span>
+      <span class="product-accordion__icon">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </summary>
+    <div class="product-accordion__content">
+      {% if product_details_content != blank %}
+        {{ product_details_content }}
+      {% elsif product.description != blank %}
+        {{ product.description }}
+      {% else %}
+        <p>Premium quality product designed for your little one's comfort. Made with the finest materials to ensure the best experience for your baby.</p>
+      {% endif %}
+    </div>
+  </details>
+
+  <details class="product-accordion">
+    <summary class="product-accordion__trigger">
+      <span class="product-accordion__title">Shipping & Returns</span>
+      <span class="product-accordion__icon">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </summary>
+    <div class="product-accordion__content">
+      {% if shipping_returns_content != blank %}
+        {{ shipping_returns_content }}
+      {% else %}
+        <ul>
+          <li>Free shipping on orders over $35</li>
+          <li>Standard shipping: 3-5 business days</li>
+          <li>Express shipping available at checkout</li>
+          <li>Free returns within 30 days</li>
+          <li>Easy returns process - no questions asked</li>
+        </ul>
+      {% endif %}
+    </div>
+  </details>
+
+  <details class="product-accordion">
+    <summary class="product-accordion__trigger">
+      <span class="product-accordion__title">Care Instructions</span>
+      <span class="product-accordion__icon">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </summary>
+    <div class="product-accordion__content">
+      {% if care_instructions_content != blank %}
+        {{ care_instructions_content }}
+      {% else %}
+        <ul>
+          <li>Machine wash cold with like colors</li>
+          <li>Use gentle detergent</li>
+          <li>Tumble dry low or hang to dry</li>
+          <li>Do not bleach</li>
+          <li>Iron on low heat if needed</li>
+        </ul>
+      {% endif %}
+    </div>
+  </details>
+</div>
+
+{% stylesheet %}
+  .product-accordions {
+    margin: 1.5rem 0 0;
+    border-top: 1px solid rgb(var(--color-border-rgb) / 0.15);
+    padding-top: 0.75rem;
+  }
+
+  .product-accordion {
+    border-bottom: 1px solid rgb(var(--color-border-rgb) / 0.12);
+  }
+
+  .product-accordion:last-child {
+    border-bottom: none;
+  }
+
+  .product-accordion__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 0;
+    cursor: pointer;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .product-accordion__trigger::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-accordion__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(var(--color-foreground));
+  }
+
+  .product-accordion__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: rgb(var(--color-foreground-rgb) / 0.4);
+    transition: transform 0.2s ease;
+  }
+
+  .product-accordion[open] .product-accordion__icon {
+    transform: rotate(180deg);
+  }
+
+  .product-accordion__content {
+    padding: 0 0 0.85rem;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: rgb(var(--color-foreground-rgb) / 0.75);
+  }
+
+  .product-accordion__content ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .product-accordion__content li {
+    margin-bottom: 0.3rem;
+  }
+{% endstylesheet %}

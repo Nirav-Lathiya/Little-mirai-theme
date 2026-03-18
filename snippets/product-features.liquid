@@ -1,0 +1,209 @@
+{% comment %}
+  Product Features
+  Dynamic - uses custom metafield, falls back to defaults
+{% endcomment %}
+
+{% liquid
+  assign features_text = product.metafields.custom.features
+  assign feature_1_icon = 'thread'
+  assign feature_1_label = '100% Cotton'
+  assign feature_2_icon = 'baby'
+  assign feature_2_label = 'Newborn Safe'
+  assign feature_3_icon = 'leaf'
+  assign feature_3_label = 'Breathable'
+  assign feature_4_icon = 'wash'
+  assign feature_4_label = 'Machine Wash'
+
+  if features_text != blank
+    assign features_array = features_text | split: '|'
+    for feature_item in features_array
+      assign parts = feature_item | split: ','
+      if forloop.index == 1
+        assign feature_1_label = parts[0] | strip
+        assign feature_1_icon = parts[1] | strip | default: 'thread'
+      elsif forloop.index == 2
+        assign feature_2_label = parts[0] | strip
+        assign feature_2_icon = parts[1] | strip | default: 'baby'
+      elsif forloop.index == 3
+        assign feature_3_label = parts[0] | strip
+        assign feature_3_icon = parts[1] | strip | default: 'leaf'
+      elsif forloop.index == 4
+        assign feature_4_label = parts[0] | strip
+        assign feature_4_icon = parts[1] | strip | default: 'wash'
+      endif
+    endfor
+  endif
+%}
+
+<div class="product-features">
+  <div class="product-features__grid">
+    <div class="product-feature">
+      <span class="product-feature__icon">
+        {% case feature_1_icon %}
+          {% when 'thread' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L12 6M12 6L8 10M12 6L16 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 10V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'baby' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          {% when 'leaf' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2V22M12 22C7.58172 22 4 16.4183 4 12C4 7.58172 12 2 12 2ZM12 22C16.4183 22 20 16.4183 20 12C20 7.58172 12 2 12 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'wash' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 9H20" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          {% else %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        {% endcase %}
+      </span>
+      <span class="product-feature__label">{{ feature_1_label }}</span>
+    </div>
+    <div class="product-feature">
+      <span class="product-feature__icon">
+        {% case feature_2_icon %}
+          {% when 'thread' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L12 6M12 6L8 10M12 6L16 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 10V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'baby' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          {% when 'leaf' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2V22M12 22C7.58172 22 4 16.4183 4 12C4 7.58172 12 2 12 2ZM12 22C16.4183 22 20 16.4183 20 12C20 7.58172 12 2 12 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'wash' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 9H20" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          {% else %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        {% endcase %}
+      </span>
+      <span class="product-feature__label">{{ feature_2_label }}</span>
+    </div>
+    <div class="product-feature">
+      <span class="product-feature__icon">
+        {% case feature_3_icon %}
+          {% when 'thread' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L12 6M12 6L8 10M12 6L16 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 10V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'baby' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          {% when 'leaf' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2V22M12 22C7.58172 22 4 16.4183 4 12C4 7.58172 12 2 12 2ZM12 22C16.4183 22 20 16.4183 20 12C20 7.58172 12 2 12 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'wash' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 9H20" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          {% else %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        {% endcase %}
+      </span>
+      <span class="product-feature__label">{{ feature_3_label }}</span>
+    </div>
+    <div class="product-feature">
+      <span class="product-feature__icon">
+        {% case feature_4_icon %}
+          {% when 'thread' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L12 6M12 6L8 10M12 6L16 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 10V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'baby' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          {% when 'leaf' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2V22M12 22C7.58172 22 4 16.4183 4 12C4 7.58172 12 2 12 2ZM12 22C16.4183 22 20 16.4183 20 12C20 7.58172 12 2 12 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% when 'wash' %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 9H20" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          {% else %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        {% endcase %}
+      </span>
+      <span class="product-feature__label">{{ feature_4_label }}</span>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-features {
+    margin: 1.5rem 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(var(--color-border-rgb) / 0.15);
+  }
+
+  .product-features__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .product-feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-align: center;
+  }
+
+  .product-feature__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgb(var(--color-foreground-rgb) / 0.04);
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+  }
+
+  .product-feature__label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    line-height: 1.2;
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-features__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+{% endstylesheet %}

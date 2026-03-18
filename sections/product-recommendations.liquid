@@ -5,6 +5,203 @@
   fetchpriority="low"
 ></script>
 
+<style>
+  /* Custom Recommendations Styling */
+  .product-recommendations {
+    background: #f8f9f5 !important;
+    padding: 48px 0;
+  }
+  
+  .product-recommendations .section-resource-list__content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  /* Section Header */
+  .product-recommendations .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .product-recommendations .section-header h2,
+  .product-recommendations .section-header .h2 {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+    margin-bottom: 0 !important;
+  }
+  
+  /* Product Card Container */
+  .product-recommendations .resource-list__item {
+    padding: 0 !important;
+  }
+  
+  /* Product Card - Rounded with Shadow */
+  .product-recommendations .card-wrapper {
+    border-radius: 16px !important;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  
+  .product-recommendations .card-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Product Image */
+  .product-recommendations .card__media {
+    aspect-ratio: 1 / 1.1;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .product-recommendations .card__media img {
+    transition: transform 0.3s ease;
+    object-fit: cover;
+  }
+  
+  .product-recommendations .card-wrapper:hover .card__media img {
+    transform: scale(1.05);
+  }
+  
+  /* Discount Badge - Save X% format */
+  .product-recommendations .badge {
+    background: #2E7D32 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    top: 12px !important;
+    left: 12px !important;
+  }
+  
+  /* On Sale Badge */
+  .product-recommendations .badge--bottom-left {
+    bottom: 12px !important;
+    top: auto !important;
+  }
+  
+  /* Quick Add Button */
+  .product-recommendations .quick-add__button {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    background: #2E7D32 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.8125rem !important;
+    padding: 0.75rem 1rem !important;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.2s ease !important;
+    width: calc(100% - 24px) !important;
+    text-align: center;
+  }
+  
+  .product-recommendations .card-wrapper:hover .quick-add__button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .product-recommendations .quick-add__button:hover {
+    background: #1B5E20 !important;
+  }
+  
+  /* Product Info */
+  .product-recommendations .card__information {
+    padding: 1rem !important;
+    text-align: left;
+  }
+  
+  .product-recommendations .card__heading {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .product-recommendations .card__heading a {
+    color: #1a1a1a !important;
+    text-decoration: none !important;
+  }
+  
+  .product-recommendations .price {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    color: #2E7D32 !important;
+  }
+  
+  .product-recommendations .price .visually-hidden {
+    color: #2E7D32 !important;
+  }
+  
+  .product-recommendations .price-item--regular {
+    color: #2E7D32 !important;
+  }
+  
+  .product-recommendations .price-item--sale {
+    color: #2E7D32 !important;
+  }
+  
+  .product-recommendations .price__regular {
+    display: flex !important;
+    gap: 8px;
+  }
+  
+  .product-recommendations .price__sale {
+    display: flex !important;
+    gap: 8px;
+  }
+  
+  .product-recommendations .price__sale .price-item--regular {
+    text-decoration: line-through !important;
+    color: #999 !important;
+    font-weight: 400 !important;
+  }
+  
+  /* Grid Adjustments */
+  @media (min-width: 990px) {
+    .product-recommendations .resource-list--grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+  }
+  
+  @media (min-width: 750px) and (max-width: 989px) {
+    .product-recommendations .resource-list--grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+  }
+  
+  @media (max-width: 749px) {
+    .product-recommendations .resource-list--grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .product-recommendations .quick-add__button {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .product-recommendations .section-header h2,
+    .product-recommendations .section-header .h2 {
+      font-size: 1.5rem !important;
+    }
+  }
+</style>
+
 {% liquid
   case section.settings.layout_type
     when 'grid'
@@ -56,9 +253,13 @@
       {% content_for 'blocks' %}
     </div>
 
-    {%- if recommendations.performed or section.settings.product == blank -%}
+
+    {%- if section.settings.recommendation_collection != blank or recommendations.performed or section.settings.product == blank -%}
       {% liquid
-        if section.settings.product == blank
+        # Check if a collection is selected
+        if section.settings.recommendation_collection != blank
+          assign products = section.settings.recommendation_collection.products | slice: 0, section.settings.max_products
+        elsif section.settings.product == blank
           assign products = null
           # Onboarding mode: Show placeholder products
           for i in (1..section.settings.max_products)
@@ -78,10 +279,21 @@
           assign products = recommendations.products
         endif
       %}
+      <pre style="background:#000;color:#0f0;padding:10px;">
+        DEBUG SECTION:
+        collection_handle: {{ section.settings.recommendation_collection.handle }}
+        products_size: {{ products.size }}
+        products_raw: {{ products }}
+      </pre>
       {% capture list_items %}
         {% for product in products limit: section.settings.max_products %}
           <div class="resource-list__item">
-            {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: product %}
+            <pre style="background:#111;color:#0f0;padding:6px;">
+              LOOP PRODUCT:
+              id: {{ product.id }}
+              title: {{ product.title }}
+            </pre>
+            {% render 'product-card', product: product, card_product: product %}
           </div>
           {% unless forloop.last %}
             <!--@list/split-->
@@ -124,7 +336,7 @@
             {% render 'resource-list-carousel',
               ref: 'resourceListCarousel',
               slides: slides,
-              slide_count: recommendations.products.size,
+              slide_count: products.size,
               settings: section.settings
             %}
         {% endcase %}
@@ -148,7 +360,7 @@
           {% render 'resource-list-carousel',
             ref: 'resourceListCarouselMobile',
             slides: slides,
-            slide_count: recommendations.products.size,
+            slide_count: products.size,
             settings: section.settings
           %}
         </div>
@@ -430,6 +642,12 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "collection",
+      "id": "recommendation_collection",
+      "label": "Collection",
+      "info": "Select a collection to display products from. If empty, shows related products."
     }
   ],
   "presets": [
@@ -459,7 +677,7 @@
           "type": "text",
           "name": "t:names.header",
           "settings": {
-            "text": "t:html_defaults.related_product"
+            "text": "<h2>Parents also bought</h2>"
           }
         },
         "static-product-card": {

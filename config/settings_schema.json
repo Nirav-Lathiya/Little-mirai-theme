@@ -2107,6 +2107,80 @@
     ]
   },
   {
+    "name": "Product Page",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Benefits"
+      },
+      {
+        "type": "text",
+        "id": "product_benefit_1",
+        "label": "Benefit 1",
+        "default": "Free shipping on orders $35+"
+      },
+      {
+        "type": "text",
+        "id": "product_benefit_2",
+        "label": "Benefit 2",
+        "default": "Newborn safe"
+      },
+      {
+        "type": "text",
+        "id": "product_benefit_3",
+        "label": "Benefit 3",
+        "default": "6 hours leak protection"
+      },
+      {
+        "type": "header",
+        "content": "Social Proof"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_people_bought",
+        "label": "Show 'people bought' message",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_stock_urgency",
+        "label": "Show stock urgency",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "stock_threshold",
+        "label": "Stock urgency threshold",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "default": 20
+      },
+      {
+        "type": "header",
+        "content": "Trust Badges"
+      },
+      {
+        "type": "text",
+        "id": "trust_badge_1",
+        "label": "Trust Badge 1",
+        "default": "Free Shipping"
+      },
+      {
+        "type": "text",
+        "id": "trust_badge_2",
+        "label": "Trust Badge 2",
+        "default": "Free Returns"
+      },
+      {
+        "type": "text",
+        "id": "trust_badge_3",
+        "label": "Trust Badge 3",
+        "default": "Secure Checkout"
+      }
+    ]
+  },
+  {
     "name": "t:names.search",
     "settings": [
       {

@@ -1,0 +1,95 @@
+{% comment %}
+  Product Benefits List
+  Dynamic - uses theme settings, falls back to defaults
+{% endcomment %}
+
+{% liquid
+  assign benefit_1 = settings.product_benefit_1
+  assign benefit_2 = settings.product_benefit_2
+  assign benefit_3 = settings.product_benefit_3
+
+  if benefit_1 == blank
+    assign benefit_1 = 'Free shipping on orders $35+'
+  endif
+  if benefit_2 == blank
+    assign benefit_2 = 'Newborn safe'
+  endif
+  if benefit_3 == blank
+    assign benefit_3 = '6 hours leak protection'
+  endif
+%}
+
+<div class="product-benefits">
+  <ul class="product-benefits__list">
+    {% if benefit_1 != blank %}
+    <li class="product-benefits__item">
+      <span class="product-benefits__icon">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>{{ benefit_1 }}</span>
+    </li>
+    {% endif %}
+    {% if benefit_2 != blank %}
+    <li class="product-benefits__item">
+      <span class="product-benefits__icon">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>{{ benefit_2 }}</span>
+    </li>
+    {% endif %}
+    {% if benefit_3 != blank %}
+    <li class="product-benefits__item">
+      <span class="product-benefits__icon">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>{{ benefit_3 }}</span>
+    </li>
+    {% endif %}
+  </ul>
+</div>
+
+{% stylesheet %}
+  .product-benefits {
+    margin: 1rem 0 1.25rem;
+  }
+
+  .product-benefits__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .product-benefits__item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.875rem;
+    color: rgb(var(--color-foreground-rgb) / 0.85);
+  }
+
+  .product-benefits__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    flex-shrink: 0;
+  }
+
+  .product-benefits__icon svg {
+    width: 10px;
+    height: 10px;
+  }
+{% endstylesheet %}

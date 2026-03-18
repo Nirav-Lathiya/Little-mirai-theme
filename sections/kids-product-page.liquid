@@ -1,0 +1,944 @@
+{% comment %}
+  Kids Product Page - Custom immersive product page layout
+  Matches expected-product-page.png exactly
+{% endcomment %}
+
+{% liquid
+  assign product = section.settings.product | default: product
+  assign current_variant = product.selected_or_first_available_variant
+  assign inventory_quantity = current_variant.inventory_quantity
+  assign show_stock_urgency = false
+  if section.settings.enable_stock_urgency and inventory_quantity and inventory_quantity > 0 and inventory_quantity <= section.settings.stock_threshold
+    assign show_stock_urgency = true
+  endif
+%}
+
+<div class="kids-product-page">
+  <div class="kids-product-page__grid">
+    <!-- Left Column - Media Gallery -->
+    <div class="kids-product-page__media">
+      {% if product.media.size > 0 %}
+        <div class="kids-product-gallery">
+          <!-- Thumbnails -->
+          <div class="kids-product-gallery__thumbnails">
+            {% for media in product.media limit: 5 %}
+              <button 
+                class="kids-product-gallery__thumbnail {% if forloop.index == 1 %}active{% endif %}"
+                data-index="{{ forloop.index0 }}"
+                onclick="document.querySelector('.kids-product-gallery__main-img').src = this.dataset.src; document.querySelectorAll('.kids-product-gallery__thumbnail').forEach(t => t.classList.remove('active')); this.classList.add('active')"
+              >
+                <img 
+                  src="{{ media | image_url: width: 100 }}" 
+                  alt="{{ media.alt | escape }}"
+                  width="100"
+                  height="100"
+                  data-src="{{ media | image_url: width: 600 }}"
+                >
+              </button>
+            {% endfor %}
+          </div>
+          <!-- Main Image -->
+          <div class="kids-product-gallery__main">
+            <img 
+              class="kids-product-gallery__main-img"
+              src="{{ product.featured_media | image_url: width: 600 }}" 
+              alt="{{ product.title }}"
+              width="600"
+              height="600"
+              zoom-src="{{ product.featured_media | image_url: width: 1200 }}"
+            >
+            <span class="kids-product-gallery__zoom-hint">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M11 8V14M8 11H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              Hover to zoom
+            </span>
+          </div>
+        </div>
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'kids-product-gallery__placeholder' }}
+      {% endif %}
+    </div>
+
+    <!-- Right Column - Product Info Card -->
+    <div class="kids-product-page__info">
+      <div class="kids-product-card">
+        <!-- Category -->
+        {% if product.collections.first %}
+          <span class="kids-product-card__category">{{ product.collections.first.title }}</span>
+        {% endif %}
+
+        <!-- Title -->
+        <h1 class="kids-product-card__title">{{ product.title }}</h1>
+
+        <!-- Price -->
+        <div class="kids-product-card__price">
+          <span class="kids-product-card__price-current">
+            {{ current_variant.price | money }}
+          </span>
+          {% if current_variant.compare_at_price > current_variant.price %}
+            <span class="kids-product-card__price-compare">
+              {{ current_variant.compare_at_price | money }}
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Star Rating -->
+        <div class="kids-product-card__rating">
+          <div class="kids-product-card__stars">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <span class="kids-product-card__review-count">(42 reviews)</span>
+        </div>
+
+        <!-- Benefits - Blue Checkmarks -->
+        <ul class="kids-product-card__benefits">
+          <li>
+            <svg width="14" height="14" viewBox="0 0 16 16"><path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            {{ section.settings.benefit_1 | default: 'Free shipping on orders $35+' }}
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 16 16"><path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            {{ section.settings.benefit_2 | default: 'Newborn safe' }}
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 16 16"><path d="M13.5 4.5L6 12L2.5 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            {{ section.settings.benefit_3 | default: '6 hours leak protection' }}
+          </li>
+        </ul>
+
+        <!-- Variant Selectors -->
+        <div class="kids-product-card__variants">
+          <!-- Color Swatches -->
+          {% if product.options contains 'Color' %}
+            {% assign color_option = product.options_with_values | where: 'name', 'Color' | first %}
+            <div class="kids-product-card__option">
+              <label class="kids-product-card__option-name">Color: <span>{{ color_option.selected_value }}</span></label>
+              <div class="kids-product-card__swatches">
+                {% for value in color_option.values %}
+                  <button 
+                    class="kids-product-card__swatch {% if value == color_option.selected_value %}active{% endif %}"
+                    style="background-color: {{ value | downcase }};"
+                    onclick="document.querySelectorAll('.kids-product-card__swatch').forEach(s => s.classList.remove('active')); this.classList.add('active'); this.closest('.kids-product-card__option').querySelector('label span').textContent = '{{ value }}'"
+                  >
+                  </button>
+                  <span class="kids-product-card__swatch-label">{{ value }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          <!-- Size Pills -->
+          {% if product.options contains 'Size' %}
+            {% assign size_option = product.options_with_values | where: 'name', 'Size' | first %}
+            <div class="kids-product-card__option">
+              <label class="kids-product-card__option-name">Size: <span>{{ size_option.selected_value }}</span></label>
+              <div class="kids-product-card__sizes">
+                {% for value in size_option.values %}
+                  <button 
+                    class="kids-product-card__size {% if value == size_option.selected_value %}active{% endif %}"
+                    onclick="document.querySelectorAll('.kids-product-card__size').forEach(s => s.classList.remove('active')); this.classList.add('active'); this.closest('.kids-product-card__option').querySelector('label span').textContent = '{{ value }}'"
+                  >
+                    {{ value }}
+                  </button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Stock Urgency -->
+        {% if show_stock_urgency %}
+          <div class="kids-product-card__stock">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18C1.64 18.3 1.55 18.64 1.55 19C1.55 19.36 1.64 19.7 1.82 20C2 20.3 2.26 20.56 2.57 20.74C2.88 20.92 3.23 21 3.59 21H20.41C20.77 21 21.12 20.92 21.43 20.74C21.74 20.56 22 20.3 22.18 20C22.36 19.7 22.45 19.36 22.45 19C22.45 18.64 22.36 18.3 22.18 18L13.71 3.86C13.53 3.56 13.28 3.32 12.97 3.14C12.66 2.96 12.32 2.86 11.97 2.86C11.62 2.86 11.28 2.96 10.97 3.14C10.66 3.32 10.41 3.56 10.23 3.86" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Only {{ inventory_quantity }} left in stock
+          </div>
+        {% endif %}
+
+        <!-- Quantity Selector -->
+        <div class="kids-product-card__quantity">
+          <label>Quantity</label>
+          <div class="kids-product-card__quantity-selector">
+            <button onclick="let input = this.nextElementSibling; input.value = Math.max(1, parseInt(input.value) - 1)">−</button>
+            <input type="number" value="1" min="1">
+            <button onclick="let input = this.previousElementSibling; input.value = parseInt(input.value) + 1">+</button>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="kids-product-card__buttons">
+          <button class="kids-product-card__btn-primary">
+            Add to Cart
+          </button>
+          <button class="kids-product-card__btn-secondary">
+            Buy Now
+          </button>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="kids-product-card__trust">
+          <div class="kids-product-card__trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M5 18H19L10 9L5 18Z" stroke="#2E7D32" stroke-width="1.5" fill="none"/>
+              <path d="M19 9H5V18H19V9Z" stroke="#2E7D32" stroke-width="1.5" opacity="0.5" fill="none"/>
+            </svg>
+            <span>{{ section.settings.trust_badge_1 | default: 'Free Shipping' }}</span>
+          </div>
+          <div class="kids-product-card__trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M3 12H21M3 6H21M3 18H21" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M9 12L12 15L18 9" stroke="#2E7D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ section.settings.trust_badge_2 | default: 'Free Returns' }}</span>
+          </div>
+          <div class="kids-product-card__trust-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="11" width="14" height="10" rx="2" stroke="#2E7D32" stroke-width="1.5"/>
+              <path d="M8 11V8C8 6.94 8.42 5.92 9.17 5.17C9.92 4.42 10.94 4 12 4C13.06 4 14.08 4.42 14.83 5.17C15.58 5.92 16 6.94 16 8V11" stroke="#2E7D32" stroke-width="1.5"/>
+              <circle cx="12" cy="16" r="2" fill="#2E7D32"/>
+            </svg>
+            <span>{{ section.settings.trust_badge_3 | default: 'Secure Checkout' }}</span>
+          </div>
+        </div>
+
+        <!-- Feature Icons -->
+        <div class="kids-product-card__features">
+          <div class="kids-product-card__feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2V6M12 6L8 10M12 6L16 10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 10V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V10" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span>100% Cotton</span>
+          </div>
+          <div class="kids-product-card__feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 20C4 16.7 7.6 14 12 14C16.4 14 20 16.7 20 20" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span>Newborn Safe</span>
+          </div>
+          <div class="kids-product-card__feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2V22M12 22C7.6 22 4 16.4 4 12M12 22C16.4 22 20 16.4 20 12" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span>Breathable</span>
+          </div>
+          <div class="kids-product-card__feature">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 9H20" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <span>Machine Wash</span>
+          </div>
+        </div>
+
+        <!-- Accordions -->
+        <div class="kids-product-card__accordions">
+          <details open>
+            <summary>Product Details</summary>
+            <div>
+              {% if product.description != blank %}
+                {{ product.description }}
+              {% else %}
+                <p>Premium quality product designed for your little one's comfort.</p>
+              {% endif %}
+            </div>
+          </details>
+          <details>
+            <summary>Shipping & Returns</summary>
+            <div>
+              <ul>
+                <li>Free shipping on orders over $35</li>
+                <li>Standard shipping: 3-5 business days</li>
+                <li>Free returns within 30 days</li>
+              </ul>
+            </div>
+          </details>
+          <details>
+            <summary>Care Instructions</summary>
+            <div>
+              <ul>
+                <li>Machine wash cold with like colors</li>
+                <li>Use gentle detergent</li>
+                <li>Tumble dry low</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Sticky Add to Cart Bar -->
+  <div class="kids-product-sticky-bar" id="kids-product-sticky-bar">
+    <div class="kids-product-sticky-bar__content">
+      <div class="kids-product-sticky-bar__price">
+        {{ current_variant.price | money }}
+      </div>
+      <button class="kids-product-sticky-bar__btn" onclick="document.querySelector('.kids-product-card__btn-primary').click()">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Kids Product Page",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "header",
+      "content": "Benefits"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1",
+      "label": "Benefit 1",
+      "default": "Free shipping on orders $35+"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2",
+      "label": "Benefit 2",
+      "default": "Newborn safe"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3",
+      "label": "Benefit 3",
+      "default": "6 hours leak protection"
+    },
+    {
+      "type": "header",
+      "content": "Stock Urgency"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_stock_urgency",
+      "label": "Show stock urgency",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "stock_threshold",
+      "label": "Stock threshold",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Trust Badges"
+    },
+    {
+      "type": "text",
+      "id": "trust_badge_1",
+      "label": "Badge 1",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "text",
+      "id": "trust_badge_2",
+      "label": "Badge 2",
+      "default": "Free Returns"
+    },
+    {
+      "type": "text",
+      "id": "trust_badge_3",
+      "label": "Badge 3",
+      "default": "Secure Checkout"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Kids Product Page"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.kids-product-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.kids-product-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 990px) {
+  .kids-product-page__grid {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+}
+
+/* Media Gallery */
+.kids-product-gallery {
+  display: flex;
+  gap: 1rem;
+}
+
+.kids-product-gallery__thumbnails {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  order: 2;
+}
+
+@media (min-width: 750px) {
+  .kids-product-gallery__thumbnails {
+    flex-direction: column;
+    order: 0;
+  }
+}
+
+.kids-product-gallery__thumbnail {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.kids-product-gallery__thumbnail.active {
+  border-color: rgb(var(--color-foreground));
+}
+
+.kids-product-gallery__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kids-product-gallery__main {
+  flex: 1;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgb(var(--color-background-rgb) / 0.5);
+}
+
+.kids-product-gallery__main-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.kids-product-gallery__main:hover .kids-product-gallery__main-img {
+  transform: scale(1.1);
+  cursor: zoom-in;
+}
+
+.kids-product-gallery__zoom-hint {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgb(var(--color-background-rgb) / 0.9);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.kids-product-gallery__main:hover .kids-product-gallery__zoom-hint {
+  opacity: 1;
+}
+
+/* Product Card */
+.kids-product-card {
+  background: rgb(var(--color-background-rgb));
+  border: 1px solid rgb(var(--color-border-rgb) / 0.3);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgb(var(--color-foreground-rgb) / 0.06);
+}
+
+.kids-product-card__category {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(var(--color-foreground-rgb) / 0.6);
+  margin-bottom: 0.5rem;
+}
+
+.kids-product-card__title {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+}
+
+.kids-product-card__price {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.kids-product-card__price-current {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.kids-product-card__price-compare {
+  font-size: 1rem;
+  text-decoration: line-through;
+  color: rgb(var(--color-foreground-rgb) / 0.5);
+}
+
+/* Star Rating */
+.kids-product-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.kids-product-card__stars {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.kids-product-card__stars span {
+  width: 1rem;
+  height: 1rem;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: #7c8c6b;
+}
+
+.kids-product-card__review-count {
+  font-size: 0.85rem;
+  color: rgb(var(--color-foreground-rgb) / 0.7);
+}
+
+/* Benefits - Blue Checkmarks */
+.kids-product-card__benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
+
+.kids-product-card__benefits li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: rgb(var(--color-foreground-rgb) / 0.85);
+  margin-bottom: 0.4rem;
+}
+
+.kids-product-card__benefits li svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+/* Variant Options */
+.kids-product-card__variants {
+  margin-bottom: 1rem;
+}
+
+.kids-product-card__option {
+  margin-bottom: 1rem;
+}
+
+.kids-product-card__option-name {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgb(var(--color-foreground-rgb) / 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.kids-product-card__option-name span {
+  color: rgb(var(--color-foreground));
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Color Swatches */
+.kids-product-card__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.kids-product-card__swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.kids-product-card__swatch.active {
+  border-color: rgb(var(--color-foreground));
+  box-shadow: 0 0 0 2px rgb(var(--color-background)), 0 0 0 4px rgb(var(--color-foreground));
+}
+
+.kids-product-card__swatch-label {
+  font-size: 0.7rem;
+  color: rgb(var(--color-foreground-rgb) / 0.7);
+  margin-left: 0.25rem;
+}
+
+/* Size Pills */
+.kids-product-card__sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kids-product-card__size {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--color-border-rgb));
+  background: rgb(var(--color-background-rgb));
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kids-product-card__size:hover {
+  border-color: rgb(var(--color-foreground));
+}
+
+.kids-product-card__size.active {
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+  border-color: rgb(var(--color-foreground));
+}
+
+/* Stock Urgency */
+.kids-product-card__stock {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(180, 100, 100, 0.1);
+  border-radius: 10px;
+  color: #b06464;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* Quantity Selector */
+.kids-product-card__quantity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.kids-product-card__quantity label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.kids-product-card__quantity-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgb(var(--color-border-rgb));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.kids-product-card__quantity-selector button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.kids-product-card__quantity-selector input {
+  width: 50px;
+  height: 40px;
+  border: none;
+  border-left: 1px solid rgb(var(--color-border-rgb));
+  border-right: 1px solid rgb(var(--color-border-rgb));
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* CTA Buttons */
+.kids-product-card__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.kids-product-card__btn-primary {
+  width: 100%;
+  height: 56px;
+  background: #2E7D32;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+}
+
+.kids-product-card__btn-primary:hover {
+  background: #1B5E20;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.35);
+}
+
+.kids-product-card__btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+}
+
+.kids-product-card__btn-secondary {
+  width: 100%;
+  height: 52px;
+  background: #ffffff;
+  color: #2E7D32;
+  border: 2px solid #2E7D32;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-product-card__btn-secondary:hover {
+  background: #f5f5f5;
+  border-color: #1B5E20;
+  color: #1B5E20;
+}
+
+/* Trust Badges */
+.kids-product-card__trust {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9f5;
+  border-radius: 12px;
+  border: 1px solid rgba(46, 125, 50, 0.15);
+}
+
+.kids-product-card__trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.kids-product-card__trust-item svg {
+  color: #2E7D32;
+  flex-shrink: 0;
+}
+
+.kids-product-card__trust-item span {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #2E7D32;
+  line-height: 1.2;
+}
+
+/* Feature Icons */
+.kids-product-card__features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgb(var(--color-border-rgb) / 0.15);
+  border-bottom: 1px solid rgb(var(--color-border-rgb) / 0.15);
+  margin-bottom: 1rem;
+}
+
+.kids-product-card__feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.kids-product-card__feature svg {
+  color: rgb(var(--color-foreground-rgb) / 0.55);
+}
+
+.kids-product-card__feature span {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(var(--color-foreground-rgb) / 0.7);
+}
+
+/* Accordions */
+.kids-product-card__accordions details {
+  border-bottom: 1px solid rgb(var(--color-border-rgb) / 0.12);
+}
+
+.kids-product-card__accordions summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.kids-product-card__accordions summary::-webkit-details-marker {
+  display: none;
+}
+
+.kids-product-card__accordions summary::after {
+  content: '▼';
+  font-size: 0.7rem;
+  color: rgb(var(--color-foreground-rgb) / 0.4);
+}
+
+.kids-product-card__accordions details[open] summary::after {
+  content: '▲';
+}
+
+.kids-product-card__accordions div {
+  padding-bottom: 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: rgb(var(--color-foreground-rgb) / 0.75);
+}
+
+.kids-product-card__accordions ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.kids-product-card__accordions li {
+  margin-bottom: 0.3rem;
+}
+
+@media (max-width: 749px) {
+  .kids-product-page {
+    padding: 1rem;
+  }
+
+  .kids-product-gallery {
+    flex-direction: column-reverse;
+  }
+
+  .kids-product-gallery__thumbnails {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .kids-product-card__features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kids-product-card__trust {
+    flex-wrap: wrap;
+  }
+
+  .kids-product-card__trust-item {
+    min-width: 30%;
+  }
+}
+
+/* Mobile Sticky Add to Cart Bar */
+.kids-product-sticky-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem;
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.kids-product-sticky-bar__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 1rem;
+}
+
+.kids-product-sticky-bar__price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.kids-product-sticky-bar__btn {
+  height: 52px;
+  padding: 0 2rem;
+  background: #2E7D32;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  transition: all 0.2s ease;
+}
+
+.kids-product-sticky-bar__btn:hover {
+  background: #1B5E20;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.35);
+}
+
+@media (max-width: 749px) {
+  .kids-product-sticky-bar {
+    display: block;
+  }
+  
+  .kids-product-page {
+    padding-bottom: 5rem;
+  }
+}
+{% endstylesheet %}

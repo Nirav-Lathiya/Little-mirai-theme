@@ -1,0 +1,87 @@
+{% comment %}
+  Social Proof Box
+  Dynamic - uses variant.inventory_quantity and theme settings
+{% endcomment %}
+
+{% liquid
+  assign show_stock_urgency = false
+  assign stock_threshold = 20
+  assign show_people_bought = false
+
+  if settings.enable_stock_urgency == true
+    assign show_stock_urgency = true
+  endif
+  if settings.stock_threshold > 0
+    assign stock_threshold = settings.stock_threshold
+  endif
+  if settings.show_people_bought == true
+    assign show_people_bought = true
+  endif
+
+  assign current_variant = product.selected_or_first_available_variant
+  assign inventory_quantity = nil
+  if current_variant
+    assign inventory_quantity = current_variant.inventory_quantity
+  endif
+%}
+
+{% if show_stock_urgency and inventory_quantity and inventory_quantity > 0 and inventory_quantity <= stock_threshold %}
+<div class="social-proof">
+  <div class="social-proof__item social-proof__item--stock">
+    <span class="social-proof__icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 9V13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10.29 3.86L1.82 18C1.64 18.3 1.55 18.64 1.55 19C1.55 19.36 1.64 19.7 1.82 20C2 20.3 2.26 20.56 2.57 20.74C2.88 20.92 3.23 21 3.59 21H20.41C20.77 21 21.12 20.92 21.43 20.74C21.74 20.56 22 20.3 22.18 20C22.36 19.7 22.45 19.36 22.45 19C22.45 18.64 22.36 18.3 22.18 18L13.71 3.86C13.53 3.56 13.28 3.32 12.97 3.14C12.66 2.96 12.32 2.86 11.97 2.86C11.62 2.86 11.28 2.96 10.97 3.14C10.66 3.32 10.41 3.56 10.23 3.86" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </span>
+    <span>Only {{ inventory_quantity }} left in stock</span>
+  </div>
+</div>
+{% endif %}
+
+{% if show_people_bought %}
+<div class="social-proof">
+  <div class="social-proof__item social-proof__item--bought">
+    <span class="social-proof__icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+        <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <span>people bought this today</span>
+  </div>
+</div>
+{% endif %}
+
+{% stylesheet %}
+  .social-proof {
+    margin: 0.75rem 0;
+  }
+
+  .social-proof__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .social-proof__item--stock {
+    background: rgba(180, 100, 100, 0.1);
+    color: #b06464;
+  }
+
+  .social-proof__item--bought {
+    background: rgba(124, 140, 107, 0.1);
+    color: rgb(124, 140, 107);
+  }
+
+  .social-proof__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+{% endstylesheet %}
