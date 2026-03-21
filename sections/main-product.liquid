@@ -11,7 +11,9 @@
   <script type="application/ld+json">
     {{ current_product | structured_data }}
   </script>
+{% endif %}
 
+{% if current_product != blank %}
   {% render 'product-page-content',
     product: current_product,
     section_id: section.id,
@@ -21,7 +23,7 @@
 
 {% schema %}
 {
-  "name": "Kids Product Page",
+  "name": "Main product",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
@@ -147,7 +149,7 @@
   ],
   "presets": [
     {
-      "name": "Kids Product Page"
+      "name": "Main product"
     }
   ]
 }

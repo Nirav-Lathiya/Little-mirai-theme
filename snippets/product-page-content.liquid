@@ -1,0 +1,73 @@
+{% liquid
+  assign content_width = 'page-width'
+  if section_settings.content_width == 'content-full-width'
+    assign content_width = 'full-width'
+  endif
+
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_media = current_variant.featured_media | default: product.featured_media
+  assign featured_preview = featured_media.preview_image | default: product.featured_image
+%}
+
+<div class="section-background color-{{ section_settings.color_scheme }}"></div>
+<section class="main-product color-{{ section_settings.color_scheme }}">
+  <div class="section section--{{ content_width }}">
+    <div
+      class="product-page"
+      data-main-product
+      data-stock-threshold="{{ section_settings.stock_threshold | default: 20 }}"
+      data-stock-enabled="{% if section_settings.enable_stock_urgency %}true{% else %}false{% endif %}"
+    >
+      <div class="product-gallery">
+        <div class="product-main-image">
+          {% if featured_preview != blank %}
+            <img
+              src="{{ featured_preview | image_url: width: 1200 }}"
+              alt="{{ featured_preview.alt | default: product.title | escape }}"
+              width="{{ featured_preview.width }}"
+              height="{{ featured_preview.height }}"
+              data-main-product-image
+              data-current-media-id="{{ featured_media.id }}"
+            >
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'product-main-image__placeholder' }}
+          {% endif %}
+        </div>
+
+        {% if product.media.size > 1 %}
+          <div class="product-thumbnails">
+            {% for media in product.media %}
+              {% assign preview_image = media.preview_image %}
+              {% assign thumbnail_height = 60 %}
+              {% if preview_image != blank and preview_image.aspect_ratio %}
+                {% assign thumbnail_height = 60 | divided_by: preview_image.aspect_ratio | round %}
+              {% endif %}
+
+              <button
+                type="button"
+                class="product-thumbnail{% if featured_media != blank and media.id == featured_media.id %} is-active{% endif %}"
+                data-thumbnail
+                data-media-id="{{ media.id }}"
+                data-full-image="{{ preview_image | image_url: width: 1200 }}"
+                data-alt="{{ preview_image.alt | default: product.title | escape }}"
+              >
+                <img
+                  src="{{ preview_image | image_url: width: 120 }}"
+                  alt="{{ preview_image.alt | default: product.title | escape }}"
+                  width="60"
+                  height="{{ thumbnail_height }}"
+                >
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% render 'product-info',
+        product: product,
+        section_id: section_id,
+        section_settings: section_settings
+      %}
+    </div>
+  </div>
+</section>

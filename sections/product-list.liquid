@@ -2,6 +2,11 @@
 
 {% liquid
   assign max_items = section.settings.max_products
+
+  assign products_collection = section.settings.collection
+  if products_collection == blank
+    assign products_collection = collections.all
+  endif
 %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
@@ -25,9 +30,9 @@
   </div>
 
   {% capture list_items %}
-    {% if section.settings.collection != blank and shop.products_count != 0 %}
-      {% paginate section.settings.collection.products by max_items %}
-        {% for product in section.settings.collection.products limit: max_items %}
+    {% if products_collection.products.size > 0 and shop.products_count != 0 %}
+      {% paginate products_collection.products by max_items %}
+        {% for product in products_collection.products limit: max_items %}
           <div
             class="resource-list__item"
           >

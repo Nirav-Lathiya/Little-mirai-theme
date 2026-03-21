@@ -9,9 +9,15 @@
 
 {% liquid
   assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
-  assign add_to_cart_text = 'actions.add' | t
-  assign choose_options_text = 'actions.choose' | t
   assign color_scheme = color_scheme | default: settings.quick_add_color_scheme
+
+  if add_to_cart_text == blank
+    assign add_to_cart_text = 'actions.add' | t
+  endif
+
+  if choose_options_text == blank
+    assign choose_options_text = 'actions.choose' | t
+  endif
 
   # Logic to determine which variant to use (matching swatch selection logic from product-card)
   assign variant = product.selected_or_first_available_variant

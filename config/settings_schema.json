@@ -2116,20 +2116,17 @@
       {
         "type": "text",
         "id": "product_benefit_1",
-        "label": "Benefit 1",
-        "default": "Free shipping on orders $35+"
+        "label": "Benefit 1"
       },
       {
         "type": "text",
         "id": "product_benefit_2",
-        "label": "Benefit 2",
-        "default": "Newborn safe"
+        "label": "Benefit 2"
       },
       {
         "type": "text",
         "id": "product_benefit_3",
-        "label": "Benefit 3",
-        "default": "6 hours leak protection"
+        "label": "Benefit 3"
       },
       {
         "type": "header",

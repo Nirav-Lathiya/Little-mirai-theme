@@ -10,12 +10,9 @@
 {
   "sections": {
     "main": {
-      "type": "kids-product-page",
+      "type": "main-product",
       "settings": {
         "product": "",
-        "benefit_1": "Free shipping on orders $35+",
-        "benefit_2": "Newborn safe",
-        "benefit_3": "6 hours leak protection",
         "enable_stock_urgency": true,
         "stock_threshold": 20,
         "trust_badge_1": "Free Shipping",
@@ -25,26 +22,6 @@
     },
     "product_recommendations": {
       "type": "product-recommendations",
-      "blocks": {
-        "static-product-card": {
-          "type": "_product-card",
-          "static": true,
-          "settings": {
-            "product_card_gap": 16,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        }
-      },
       "settings": {
         "product": "",
         "recommendation_type": "related",
@@ -62,7 +39,7 @@
         "color_scheme": "",
         "padding-block-start": 48,
         "padding-block-end": 48,
-        "recommendation_collection": "parents-also-bought"
+        "recommendation_collection": ""
       }
     }
   },

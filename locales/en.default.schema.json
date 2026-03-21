@@ -197,11 +197,11 @@
     "real_people": "<p>Real people making great products</p>",
     "related_product": "<h3>Related products</h3>",
     "return_policy": "<h2>What is the return policy?</h2>",
-    "reviews": "<p>★★★★★ 368 Reviews</p>",
+    "reviews": "<p>★★★★★ Customer Reviews</p>",
     "share_information_about_your": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>",
     "shipping_based_on_location": "<p>Shipping is calculated based on your location and the items in your order. You will always know the shipping price before you purchase.</p>",
     "shop_by_collection": "<h3>Shop by collection</h3>",
-    "shop_collection": "<p>Discover our curated collection featuring hand-picked favorites that blend style and quality.</p>",
+    "shop_collection": "<p>Discover our collection featuring hand-picked favorites that blend style and quality.</p>",
     "signature_products": "<h2>Our signature product</h2>",
     "styled_with": "<h3>Styled with</h3>",
     "subscribe": "<h2>Subscribe to our emails</h2>",
@@ -1019,7 +1019,7 @@
     // Setting label for text capitalization of product titles
     "product_title_case": "Product title case",
     "product_type": "Product type",
-    "products": "Products",
+    "products": "Products.......",
     "products_per_page": "Products per page",
     "product_custom_property": {
       "heading": "Heading",

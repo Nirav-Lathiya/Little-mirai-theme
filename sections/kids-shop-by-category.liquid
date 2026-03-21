@@ -1,0 +1,296 @@
+
+{% liquid
+  assign heading = section.settings.heading | strip
+  assign description = section.settings.description | strip
+%}
+
+<section
+  class="section kids-shop-by-category color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="kids-shop-by-category__container page-width">
+    {% if heading != blank or description != blank %}
+      <div class="kids-shop-by-category__header">
+        {% if heading != blank %}
+          <h2 class="kids-shop-by-category__heading">{{ heading }}</h2>
+        {% endif %}
+        {% if description != blank %}
+          <p class="kids-shop-by-category__description">{{ description }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="kids-shop-by-category__grid">
+      {% for block in section.blocks %}
+        <article
+          class="kids-shop-by-category__card"
+          {{ block.shopify_attributes }}
+        >
+          <a
+            class="kids-shop-by-category__link"
+            href="{{ block.settings.link | default: routes.all_products_collection_url }}"
+            aria-label="Shop {{ block.settings.title }}"
+          ></a>
+
+          <div class="kids-shop-by-category__icon">
+            {% case block.settings.icon_svg %}
+              {% when 'diaper' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2"/><path d="M4 6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6"/><path d="M9 12h6"/></svg>
+              {% when 'langot' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>
+              {% when 'bib' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 6h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Z"/><path d="M3 10h18"/></svg>
+              {% when 'wipes' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 10h8"/><path d="M8 14h4"/></svg>
+              {% when 'padded' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M8 4h8"/><path d="M6 10h12a2 2 0 0 1 2 2v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-6a2 2 0 0 1 2-2Z"/></svg>
+              {% when 'swim' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v4"/><path d="M8 14l4-2 4 2"/><path d="M6 20h12"/></svg>
+              {% when 'blanket' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+              {% when 'bag' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              {% when 'gifts' %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="14" rx="2"/><path d="M12 8v14"/><path d="M3 12h18"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg>
+              {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            {% endcase %}
+          </div>
+
+          <div class="kids-shop-by-category__content">
+            <h3 class="kids-shop-by-category__title">{{ block.settings.title }}</h3>
+            {% if block.settings.item_count != blank %}
+              <span class="kids-shop-by-category__count">{{ block.settings.item_count }} items</span>
+            {% endif %}
+          </div>
+
+          <div class="kids-shop-by-category__arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .kids-shop-by-category__container {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .kids-shop-by-category__header {
+    display: grid;
+    gap: 0.75rem;
+    text-align: center;
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .kids-shop-by-category__heading {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.15;
+    color: rgb(var(--color-foreground-heading-rgb) / 1);
+  }
+
+  .kids-shop-by-category__description {
+    margin: 0;
+    font-size: 1rem;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    line-height: 1.5;
+  }
+
+  .kids-shop-by-category__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .kids-shop-by-category__card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid rgb(111 140 111 / 0.1);
+    box-shadow: 0 6px 20px rgb(61 78 61 / 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .kids-shop-by-category__card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgb(61 78 61 / 0.12);
+      border-color: rgb(111 140 111 / 0.25);
+    }
+
+    .kids-shop-by-category__card:hover .kids-shop-by-category__arrow {
+      transform: translateX(4px);
+    }
+  }
+
+  .kids-shop-by-category__link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+  }
+
+  .kids-shop-by-category__icon {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8f0e4 0%, #f5ede0 100%);
+    border-radius: 14px;
+    color: #5b7562;
+  }
+
+  .kids-shop-by-category__content {
+    flex: 1;
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .kids-shop-by-category__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(var(--color-foreground-rgb) / 0.9);
+    line-height: 1.3;
+  }
+
+  .kids-shop-by-category__count {
+    font-size: 0.8rem;
+    color: rgb(var(--color-foreground-rgb) / 0.55);
+  }
+
+  .kids-shop-by-category__arrow {
+    flex-shrink: 0;
+    color: #5b7562;
+    transition: transform 0.2s ease;
+  }
+
+  @media screen and (min-width: 750px) {
+    .kids-shop-by-category__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .kids-shop-by-category__grid {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
+    }
+
+    .kids-shop-by-category__card {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .kids-shop-by-category__content {
+      align-items: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kids Shop by Category",
+  "class": "ui-test-shop-by-category",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_svg",
+          "label": "Icon",
+          "options": [
+            { "value": "diaper", "label": "Cloth Diaper" },
+            { "value": "langot", "label": "Langot" },
+            { "value": "bib", "label": "Bib" },
+            { "value": "wipes", "label": "Wipes" },
+            { "value": "padded", "label": "Training Pants" },
+            { "value": "swim", "label": "Swim Diaper" },
+            { "value": "blanket", "label": "Swaddle/Blanket" },
+            { "value": "bag", "label": "Diaper Bag" },
+            { "value": "gifts", "label": "Gift Sets" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "item_count",
+          "label": "Item count (optional)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,22 +1,12 @@
 {% comment %}
   Product Benefits List
-  Dynamic - uses theme settings, falls back to defaults
+  Dynamic - uses theme settings
 {% endcomment %}
 
 {% liquid
   assign benefit_1 = settings.product_benefit_1
   assign benefit_2 = settings.product_benefit_2
   assign benefit_3 = settings.product_benefit_3
-
-  if benefit_1 == blank
-    assign benefit_1 = 'Free shipping on orders $35+'
-  endif
-  if benefit_2 == blank
-    assign benefit_2 = 'Newborn safe'
-  endif
-  if benefit_3 == blank
-    assign benefit_3 = '6 hours leak protection'
-  endif
 %}
 
 <div class="product-benefits">

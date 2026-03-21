@@ -1,0 +1,334 @@
+
+{% liquid
+  assign heading = section.settings.heading | strip
+  assign eyebrow = section.settings.eyebrow | strip
+%}
+
+<section
+  class="section kids-shop-by-age color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="kids-shop-by-age__container page-width">
+    {% if eyebrow != blank or heading != blank %}
+      <div class="kids-shop-by-age__header">
+        {% if eyebrow != blank %}
+          <p class="kids-shop-by-age__eyebrow">{{ eyebrow }}</p>
+        {% endif %}
+        {% if heading != blank %}
+          <h2 class="kids-shop-by-age__heading">{{ heading }}</h2>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="kids-shop-by-age__grid">
+      {% for block in section.blocks %}
+        <article
+          class="kids-shop-by-age__card"
+          {{ block.shopify_attributes }}
+        >
+          <a
+            class="kids-shop-by-age__link"
+            href="{{ block.settings.link | default: routes.all_products_collection_url }}"
+            aria-label="Shop for {{ block.settings.title }}"
+          ></a>
+
+          <div class="kids-shop-by-age__media">
+            {% if block.settings.image != blank %}
+              {{
+                block.settings.image
+                | image_url: width: 600
+                | image_tag:
+                  widths: '300, 450, 600',
+                  sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw',
+                  loading: 'lazy',
+                  class: 'kids-shop-by-age__image'
+              }}
+            {% else %}
+              <div class="kids-shop-by-age__placeholder">
+                <span class="kids-shop-by-age__age-range">{{ block.settings.age_range }}</span>
+              </div>
+            {% endif %}
+
+            <div class="kids-shop-by-age__overlay"></div>
+          </div>
+
+          <div class="kids-shop-by-age__content">
+            <span class="kids-shop-by-age__age-badge">{{ block.settings.age_range }}</span>
+            <h3 class="kids-shop-by-age__title">{{ block.settings.title }}</h3>
+            <p class="kids-shop-by-age__description">{{ block.settings.description }}</p>
+            <span class="kids-shop-by-age__cta">
+              Shop Now
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </span>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .kids-shop-by-age__container {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .kids-shop-by-age__header {
+    display: grid;
+    gap: 0.5rem;
+    text-align: center;
+    max-width: 36rem;
+    margin: 0 auto;
+  }
+
+  .kids-shop-by-age__eyebrow {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(var(--color-foreground-rgb) / 0.6);
+  }
+
+  .kids-shop-by-age__heading {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.15;
+    color: rgb(var(--color-foreground-heading-rgb) / 1);
+  }
+
+  .kids-shop-by-age__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+
+  .kids-shop-by-age__card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #e8f0e4 0%, #f5ede0 100%);
+    box-shadow: 0 12px 32px rgb(61 78 61 / 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .kids-shop-by-age__card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgb(61 78 61 / 0.18);
+    }
+
+    .kids-shop-by-age__card:hover .kids-shop-by-age__image {
+      transform: scale(1.05);
+    }
+  }
+
+  .kids-shop-by-age__link {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+  }
+
+  .kids-shop-by-age__media {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .kids-shop-by-age__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .kids-shop-by-age__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #d4e4d0, #ede0d0);
+  }
+
+  .kids-shop-by-age__age-range {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: #3d5c3d;
+    opacity: 0.3;
+  }
+
+  .kids-shop-by-age__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgb(30 50 30 / 0.85) 0%,
+      rgb(30 50 30 / 0.4) 40%,
+      transparent 70%
+    );
+  }
+
+  .kids-shop-by-age__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    display: grid;
+    gap: 0.4rem;
+    z-index: 2;
+  }
+
+  .kids-shop-by-age__age-badge {
+    display: inline-block;
+    width: fit-content;
+    padding: 0.35rem 0.85rem;
+    background: rgb(255 255 255 / 0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.04em;
+  }
+
+  .kids-shop-by-age__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .kids-shop-by-age__description {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgb(255 255 255 / 0.85);
+    line-height: 1.4;
+  }
+
+  .kids-shop-by-age__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  @media screen and (max-width: 749px) {
+    .kids-shop-by-age__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .kids-shop-by-age__media {
+      aspect-ratio: 4 / 5;
+    }
+
+    .kids-shop-by-age__content {
+      padding: 1rem;
+    }
+
+    .kids-shop-by-age__title {
+      font-size: 1.1rem;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .kids-shop-by-age__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kids Shop by Age",
+  "class": "ui-test-shop-by-age",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "label": "Eyebrow text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "age_group",
+      "name": "Age Group",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background image"
+        },
+        {
+          "type": "text",
+          "id": "age_range",
+          "label": "Age range"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

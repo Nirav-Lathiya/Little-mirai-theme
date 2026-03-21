@@ -1,25 +1,61 @@
+{% comment %}
+  Premium Product Card Snippet - Mirai Kids Theme
+  Expects: product
+{% endcomment %}
 
-{% liquid
-  assign products = null
+{% if product %}
+  {% assign selected_variant = product.selected_or_first_available_variant %}
+  
+  <div class="product-card">
+    <div class="card-gallery">
+      <a href="{{ product.url }}" class="card-gallery__link">
+        {% if product.featured_image %}
+          {% assign image_height = 600 | divided_by: product.featured_image.aspect_ratio | round %}
+          <img
+            src="{{ product.featured_image | image_url: width: 600 }}"
+            alt="{{ product.title }}"
+            loading="lazy"
+            width="600"
+            height="{{ image_height }}"
+          />
+        {% else %}
+          <div class="card-gallery__placeholder">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+        
+        {% if product.available == false %}
+          <span class="product-badge product-badge--soldout">Sold out</span>
+        {% elsif selected_variant.compare_at_price > selected_variant.price %}
+          {% assign discount_percent = selected_variant.compare_at_price | minus: selected_variant.price | times: 100.0 | divided_by: selected_variant.compare_at_price %}
+          <span class="product-badge">-{{ discount_percent | round }}%</span>
+        {% endif %}
+      </a>
+    </div>
 
-  if section.settings.recommendation_collection != blank
-    assign collection_handle = section.settings.recommendation_collection.handle
-    assign collection_obj = collections[collection_handle]
-    
-    if collection_obj != blank
-      assign products = collection_obj.products
-    endif
+    <div class="product-card__content">
+      <h3 class="product-card__title">
+        <a href="{{ product.url }}">{{ product.title }}</a>
+      </h3>
+      
+      <div class="product-card__price">
+        {% if selected_variant.compare_at_price > selected_variant.price %}
+          <span class="price-original"><s>{{ selected_variant.compare_at_price | money }}</s></span>
+          <span class="price-sale">{{ selected_variant.price | money }}</span>
+        {% else %}
+          <span class="price-current">{{ selected_variant.price | money }}</span>
+        {% endif %}
+      </div>
+    </div>
 
-  endif
-
-  if products == blank and product.collections.size > 0
-    assign fallback_collection = product.collections.first
-    assign products = collections[fallback_collection.handle].products
-  endif
-
-  if products == blank
-    assign products = collections.all.products
-  endif
-
-  assign products = products | slice: 0, section.settings.max_products
-%}
+    <div class="product-card__cta">
+      <button class="quick-add__button"{% if product.available == false %} disabled{% endif %}>
+        {% if product.available == false %}
+          Sold out
+        {% else %}
+          + Quick Add
+        {% endif %}
+      </button>
+    </div>
+  </div>
+{% endif %}

@@ -1,76 +1,10 @@
 {% liquid
-  capture product_context
-    echo product.title
-    echo ' '
-    echo product.type
-    echo ' '
-    echo product.vendor
-    echo ' '
-    echo product.tags | join: ' '
-  endcapture
-  assign product_context = product_context | downcase
-
-  assign category_label = 'Little everyday essential'
-  assign story_heading = 'Made to feel thoughtful in every nursery routine'
-  assign story_intro = 'This product page is designed to support the buying decision with comfort cues, fit notes, and a calmer visual hierarchy.'
-  assign highlight_title = 'Why parents keep reaching for it'
-  assign highlight_value = 'Soft, simple, everyday confidence'
-  assign highlight_copy = 'A polished detail section helps parents scan what matters fast, from feel to fit to delivery expectations.'
-  assign story_image = 'kids-collection-hero.jpg'
-  assign feature_1_title = 'Comfort-led build'
-  assign feature_1_text = 'Soft-touch materials and a gentle finish create an elevated first impression.'
-  assign feature_2_title = 'Practical routine'
-  assign feature_2_text = 'Everything is merchandised to feel easy to understand, compare, and add to cart.'
-  assign feature_3_title = 'Giftable presentation'
-  assign feature_3_text = 'Warm visuals and calmer copy make the product page feel premium without feeling clinical.'
-  assign list_title = 'Helpful details'
-  assign list_1 = 'Designed for everyday comfort and easy repeat purchases.'
-  assign list_2 = 'Clear visual rhythm keeps key buying information easy to scan.'
-  assign list_3 = 'Pairs naturally with the same calm merchandising language across collections.'
-  assign care_title = 'Parent-ready notes'
-  assign care_text = 'Free shipping messaging, routine-friendly copy, and an editorial layout all help this page feel more trustworthy.'
-
-  if product_context contains 'diaper' or product_context contains 'nappy'
-    assign category_label = 'Diapering essential'
-    assign story_heading = 'Soft absorbency, clean communication, and more confidence at checkout'
-    assign story_intro = 'For diaper products, parents want reassurance quickly: dryness, softness, fit, and how it works in a real daily routine.'
-    assign highlight_title = 'What this layout emphasizes'
-    assign highlight_value = 'Dry comfort and gentle touch'
-    assign highlight_copy = 'The page now frames diaper products with breathable language, care cues, and softer visual treatment to feel more premium.'
-    assign story_image = 'kids-diaper-cactus.jpg'
-    assign feature_1_title = 'Dry-feel confidence'
-    assign feature_1_text = 'Highlights absorbency and comfort instead of leaving parents to search the description for basics.'
-    assign feature_2_title = 'Gentle skin story'
-    assign feature_2_text = 'Supports a softer, more baby-safe perception with calm color, copy, and spacing.'
-    assign feature_3_title = 'Bundle-friendly flow'
-    assign feature_3_text = 'Makes repeat-buy diaper essentials feel polished enough for everyday replenishment.'
-    assign list_title = 'Parents usually want to know'
-    assign list_1 = 'How soft it feels around the waist and legs.'
-    assign list_2 = 'Whether it looks breathable enough for all-day wear.'
-    assign list_3 = 'If the page makes sizing, routine use, and reorder confidence obvious.'
-    assign care_title = 'Merchandising note'
-    assign care_text = 'Diapers perform better on the page when softness, absorbency, and routine ease are presented before longer body copy.'
-  elsif product_context contains 'sock'
-    assign category_label = 'Tiny-foot essential'
-    assign story_heading = 'Cozy texture, secure fit, and a sweeter way to merchandise baby socks'
-    assign story_intro = 'For baby socks, the page should answer the emotional buy as much as the practical one: softness, stay-put fit, and giftable charm.'
-    assign highlight_title = 'What this layout emphasizes'
-    assign highlight_value = 'Warm comfort and stay-put fit'
-    assign highlight_copy = 'The layout gives sock products a boutique feel with visual warmth, lighter detail cards, and a more intentional narrative.'
-    assign story_image = 'kids-socks-flatlay.jpg'
-    assign feature_1_title = 'Soft knit story'
-    assign feature_1_text = 'Frames the product as a cozy, giftable essential instead of a generic apparel add-on.'
-    assign feature_2_title = 'Stay-on reassurance'
-    assign feature_2_text = 'Gives parents quick cues around stretch, cuff comfort, and everyday wearability.'
-    assign feature_3_title = 'Boutique presentation'
-    assign feature_3_text = 'Balances warmth and clarity so the product feels premium enough for gifting and stocking up.'
-    assign list_title = 'Parents usually want to know'
-    assign list_1 = 'Whether the cuff stays on without feeling too tight.'
-    assign list_2 = 'If the fabric feels breathable enough for all-day wear.'
-    assign list_3 = 'How easily the product fits into gifting, bundling, or daily rotation.'
-    assign care_title = 'Merchandising note'
-    assign care_text = 'Baby sock pages convert better when the visual mood feels warm and tactile, with fit and softness cues surfaced early.'
-  endif
+  assign category_label = product.type | default: 'Baby Essential'
+  assign story_heading = product.title
+  assign story_intro = product.description | strip_html | truncate: 200
+  assign highlight_title = 'Key Features'
+  assign highlight_value = 'Premium Quality'
+  assign highlight_copy = "Carefully designed for your little one's comfort and safety."
 %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
@@ -81,13 +15,20 @@
   <div class="kids-product-story__layout">
     <div class="kids-product-story__visual">
       <div class="kids-product-story__image-wrap">
-        <img
-          src="{{ story_image | asset_url }}"
-          alt="{{ product.title }}"
-          width="1600"
-          height="1068"
-          loading="lazy"
-        >
+        {% if product.featured_image != blank %}
+          {{
+            product.featured_image
+            | image_url: width: 1400
+            | image_tag:
+              alt: product.title,
+              width: "1600",
+              height: "1068",
+              loading: 'lazy',
+              class: 'kids-product-story__image'
+          }}
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag: 'kids-product-story__placeholder' }}
+        {% endif %}
       </div>
       <div class="kids-product-story__floating-card">
         <span>{{ highlight_title }}</span>
@@ -101,33 +42,14 @@
       <h2>{{ story_heading }}</h2>
       <p class="kids-product-story__intro">{{ story_intro }}</p>
 
-      <div class="kids-product-story__features">
-        <article class="kids-product-story__feature">
-          <h3>{{ feature_1_title }}</h3>
-          <p>{{ feature_1_text }}</p>
-        </article>
-        <article class="kids-product-story__feature">
-          <h3>{{ feature_2_title }}</h3>
-          <p>{{ feature_2_text }}</p>
-        </article>
-        <article class="kids-product-story__feature">
-          <h3>{{ feature_3_title }}</h3>
-          <p>{{ feature_3_text }}</p>
-        </article>
-      </div>
-
       <div class="kids-product-story__details">
         <div class="kids-product-story__detail-card">
-          <h3>{{ list_title }}</h3>
-          <ul>
-            <li>{{ list_1 }}</li>
-            <li>{{ list_2 }}</li>
-            <li>{{ list_3 }}</li>
-          </ul>
-        </div>
-        <div class="kids-product-story__detail-card">
-          <h3>{{ care_title }}</h3>
-          <p>{{ care_text }}</p>
+          <h3>Product Details</h3>
+          {% if product.description != blank %}
+            <p>{{ product.description | strip_html | truncate: 300 }}</p>
+          {% else %}
+            <p>Discover quality essentials designed for your little one's comfort.</p>
+          {% endif %}
         </div>
       </div>
     </div>

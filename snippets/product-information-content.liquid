@@ -34,49 +34,11 @@
       assign content_width = 'full-width'
   endcase
 
-  capture product_context
-    echo product.title
-    echo ' '
-    echo product.type
-    echo ' '
-    echo product.vendor
-    echo ' '
-    echo product.tags | join: ' '
-  endcapture
-  assign product_context = product_context | downcase
-
-  assign story_kicker = 'Little everyday essential'
+  assign story_kicker = product.type | default: 'Baby Essential'
   assign story_summary = product.description | strip_html | strip | truncatewords: 26
-  assign promise_1 = 'Soft-touch comfort'
-  assign promise_2 = 'Easy-to-scan details'
-  assign promise_3 = 'Parent-first layout'
-  assign review_message = 'Parents love the calmer, more premium presentation.'
-  assign shipping_message = 'Free shipping over $75. Estimated delivery in 3 to 5 business days.'
-  assign care_title = 'Why it works'
-  assign care_message = 'This layout keeps the most reassuring product cues visible near the add-to-cart area.'
 
   if story_summary == blank
-    assign story_summary = 'The product page now balances softness, clarity, and trust so the buying journey feels easier for parents.'
-  endif
-
-  if product_context contains 'diaper' or product_context contains 'nappy'
-    assign story_kicker = 'Diapering essential'
-    assign promise_1 = 'Dry-feel confidence'
-    assign promise_2 = 'Soft leg and waist comfort'
-    assign promise_3 = 'Routine-ready replenishment'
-    assign review_message = 'Parents look for softness, absorbency, and easier repeat buying right away.'
-    assign shipping_message = 'Fast nursery restock shipping and free delivery over $75.'
-    assign care_title = 'Key diaper detail'
-    assign care_message = 'Merchandising is centered on absorbency, comfort, and a more reassuring tone for sensitive-skin shoppers.'
-  elsif product_context contains 'sock'
-    assign story_kicker = 'Tiny-foot essential'
-    assign promise_1 = 'Cozy knit softness'
-    assign promise_2 = 'Stay-put stretch'
-    assign promise_3 = 'Giftable everyday charm'
-    assign review_message = 'Parents want to know these feel soft, stay on, and still look sweet enough to gift.'
-    assign shipping_message = 'Perfect for gift bundles, top-ups, and everyday wardrobe refreshes.'
-    assign care_title = 'Key sock detail'
-    assign care_message = 'The page now surfaces tactile comfort, fit reassurance, and a boutique-style presentation much earlier.'
+    assign story_summary = 'Discover quality essentials designed for your little one.'
   endif
 %}
 
@@ -112,46 +74,13 @@
         data-product-details-column
       >
         <div class="product-information__story-card">
+          {% if story_kicker != blank %}
           <span class="product-information__story-eyebrow">{{ story_kicker }}</span>
+          {% endif %}
+          {% if story_summary != blank %}
           <p class="product-information__story-summary">{{ story_summary }}</p>
-          <div class="product-information__story-promises">
-            <span>{{ promise_1 }}</span>
-            <span>{{ promise_2 }}</span>
-            <span>{{ promise_3 }}</span>
-          </div>
+          {% endif %}
         </div>
-        <template data-product-detail-template>
-          <div
-            class="product-information__meta product-information__meta--rating"
-            data-product-rating-placeholder
-          >
-            <div
-              class="product-information__stars"
-              aria-hidden="true"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span>{{ review_message }}</span>
-          </div>
-          <div
-            class="product-information__meta product-information__meta--shipping"
-            data-product-shipping-info
-          >
-            <p class="product-information__meta-title">Shipping</p>
-            <p>{{ shipping_message }}</p>
-          </div>
-          <div
-            class="product-information__meta product-information__meta--shipping"
-            data-product-care-info
-          >
-            <p class="product-information__meta-title">{{ care_title }}</p>
-            <p>{{ care_message }}</p>
-          </div>
-        </template>
         {{ product_details }}
       </div>
     {% endcapture %}

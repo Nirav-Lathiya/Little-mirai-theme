@@ -1,0 +1,309 @@
+
+{% liquid
+  assign heading = section.settings.heading | strip
+  assign subheading = section.settings.subheading | strip
+%}
+
+<section
+  class="section kids-trust-badges color-{{ section.settings.color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  <div class="kids-trust-badges__container page-width">
+    {% if heading != blank or subheading != blank %}
+      <div class="kids-trust-badges__header">
+        {% if heading != blank %}
+          <h2 class="kids-trust-badges__heading">{{ heading }}</h2>
+        {% endif %}
+        {% if subheading != blank %}
+          <p class="kids-trust-badges__subheading">{{ subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="kids-trust-badges__grid">
+      {% for block in section.blocks %}
+        <article
+          class="kids-trust-badges__item"
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.icon != blank %}
+            <div class="kids-trust-badges__icon">
+              {{
+                block.settings.icon
+                | image_url: width: 80
+                | image_tag:
+                  widths: '40, 60, 80',
+                  loading: 'lazy',
+                  class: 'kids-trust-badges__icon-image'
+              }}
+            </div>
+          {% else %}
+            <div class="kids-trust-badges__icon-default">
+              {% case block.settings.icon_svg %}
+                {% when 'leaf' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                {% when 'heart' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                {% when 'truck' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                {% when 'shield' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                {% when 'recycle' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"/><path d="m14 16-3 3 3 3"/><path d="M8.293 13.596 4.875 8.5l3.5-5"/><path d="m9.5 5.5 4-1-1 4"/><path d="M19.207 13.596l.375-5.096-3.25-3.25-.375 5.096"/><path d="M4.875 15.5l-.375 5.096 3.25 3.25.375-5.096"/></svg>
+                {% when 'star' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {% when 'refresh' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                {% when 'badge' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+                {% else %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+              {% endcase %}
+            </div>
+          {% endif %}
+
+          <div class="kids-trust-badges__content">
+            {% if block.settings.number != blank %}
+              <span class="kids-trust-badges__number">{{ block.settings.number }}</span>
+            {% endif %}
+            <h3 class="kids-trust-badges__title">{{ block.settings.title }}</h3>
+            {% if block.settings.description != blank %}
+              <p class="kids-trust-badges__description">{{ block.settings.description }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .kids-trust-badges {
+    background: linear-gradient(180deg, #f8faf6 0%, #fffdf8 100%);
+  }
+
+  .kids-trust-badges__container {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .kids-trust-badges__header {
+    display: grid;
+    gap: 0.75rem;
+    text-align: center;
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .kids-trust-badges__heading {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.15;
+    color: rgb(var(--color-foreground-heading-rgb) / 1);
+  }
+
+  .kids-trust-badges__subheading {
+    margin: 0;
+    font-size: 1rem;
+    color: rgb(var(--color-foreground-rgb) / 0.72);
+    line-height: 1.5;
+  }
+
+  .kids-trust-badges__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .kids-trust-badges__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid rgb(111 140 111 / 0.1);
+    box-shadow: 0 8px 24px rgb(61 78 61 / 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .kids-trust-badges__item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgb(61 78 61 / 0.12);
+    }
+  }
+
+  .kids-trust-badges__icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8f0e4, #f5ede0);
+    border-radius: 14px;
+  }
+
+  .kids-trust-badges__icon-image {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .kids-trust-badges__icon-default {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8f0e4, #f5ede0);
+    border-radius: 14px;
+    color: #5b7562;
+  }
+
+  .kids-trust-badges__content {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .kids-trust-badges__number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #3d5c3d;
+  }
+
+  .kids-trust-badges__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: rgb(var(--color-foreground-rgb) / 0.9);
+  }
+
+  .kids-trust-badges__description {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgb(var(--color-foreground-rgb) / 0.6);
+    line-height: 1.4;
+  }
+
+  @media screen and (min-width: 750px) {
+    .kids-trust-badges__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .kids-trust-badges__item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .kids-trust-badges__content {
+      align-items: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Kids Trust Badges",
+  "class": "ui-test-trust-badges",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Parents Trust Us"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Made with care, loved by thousands of families"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Trust Badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon image (optional)"
+        },
+        {
+          "type": "select",
+          "id": "icon_svg",
+          "label": "Icon",
+          "options": [
+            { "value": "", "label": "None" },
+            { "value": "leaf", "label": "Eco Leaf" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "recycle", "label": "Recycle" },
+            { "value": "star", "label": "Star" },
+            { "value": "refresh", "label": "Return" },
+            { "value": "badge", "label": "Certified" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number (e.g. 20,000+)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,5 +1,3 @@
-
-
 <script
   src="{{ 'results-list.js' | asset_url }}"
   type="module"
@@ -23,288 +21,87 @@
 {% endjavascript %}
 
 {% liquid
-  capture collection_context
-    echo collection.title
-    echo ' '
-    echo collection.handle
-  endcapture
-  assign collection_context = collection_context | downcase
-
-  assign collection_kicker = 'Curated little essentials'
-  assign collection_headline = 'Thoughtfully merchandised little essentials'
-  assign collection_summary = collection.description | strip_html | strip
-  assign collection_promise_1 = 'Soft everyday staples'
-  assign collection_promise_2 = 'Clear prices and titles'
-  assign collection_promise_3 = 'Giftable, calm presentation'
-  assign collection_visual = 'kids-collection-hero.jpg'
-
-  if collection_summary == blank
-    assign collection_summary = 'A polished collection experience with softer visuals, clearer hierarchy, and product cards that feel ready for modern parents.'
-  endif
-
-  if collection_context contains 'diaper' or collection_context contains 'nappy'
-    assign collection_kicker = 'Gentle diapering, styled to convert'
-    assign collection_headline = 'Soft absorbency with a calmer way to shop'
-    assign collection_summary = collection.description | strip_html | strip
-    if collection_summary == blank
-      assign collection_summary = 'Designed to make diaper essentials feel softer, clearer, and more premium, with absorbency, comfort, and routine confidence front and center.'
-    endif
-    assign collection_promise_1 = 'Dry-feel confidence'
-    assign collection_promise_2 = 'Gentle skin story'
-    assign collection_promise_3 = 'Bundle-friendly essentials'
-    assign collection_visual = 'kids-diaper-cactus.jpg'
-  elsif collection_context contains 'sock'
-    assign collection_kicker = 'Tiny-foot favorites with boutique warmth'
-    assign collection_headline = 'Cozy little sock edits that feel gift-ready'
-    assign collection_summary = collection.description | strip_html | strip
-    if collection_summary == blank
-      assign collection_summary = 'A warmer, more giftable collection layout for baby socks, with cozy visuals and quick parent-friendly details that feel easy to shop.'
-    endif
-    assign collection_promise_1 = 'Cozy knit feel'
-    assign collection_promise_2 = 'Stay-put comfort'
-    assign collection_promise_3 = 'Sweet gifting energy'
-    assign collection_visual = 'kids-socks-flatlay.jpg'
-  endif
+  assign collection_summary = collection.description | strip_html | strip | truncate: 180
 %}
 
-{% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<results-list
-  class="section product-grid-container color-{{ section.settings.color_scheme }}"
-  style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
-  section-id="{{ section.id }}"
-  infinite-scroll="{{ section.settings.enable_infinite_scroll }}"
+<div
+  class="section-background color-{{ section.settings.color_scheme }}"
+></div>
+
+<section
+  class="collection-page color-{{ section.settings.color_scheme }}"
+  style="
+    --collection-section-padding-top: {{ section.settings.padding-block-start }}px;
+    --collection-section-padding-bottom: {{ section.settings.padding-block-end }}px;
+  "
 >
-  {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
+  <div class="page-width">
+    {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
-  <div class="main-collection-intro page-width">
-    <div class="main-collection-intro__copy">
-      <span class="main-collection-intro__eyebrow">{{ collection_kicker }}</span>
-      <h2 class="main-collection-intro__title">{{ collection_headline }}</h2>
-      <p class="main-collection-intro__summary">{{ collection_summary }}</p>
-      <div class="main-collection-intro__pills">
-        <span>{{ collection_promise_1 }}</span>
-        <span>{{ collection_promise_2 }}</span>
-        <span>{{ collection_promise_3 }}</span>
-      </div>
-    </div>
-
-    <div class="main-collection-intro__visual">
-      {% if collection.image != blank %}
-        {{
-          collection.image
-          | image_url: width: 1400
-          | image_tag:
-            loading: 'lazy',
-            alt: collection.title,
-            class: 'main-collection-intro__image'
-        }}
-      {% else %}
-        <img
-          src="{{ collection_visual | asset_url }}"
-          alt="{{ collection.title }}"
-          class="main-collection-intro__image"
-          width="1600"
-          height="1068"
-          loading="lazy"
-        >
+    <div class="collection-hero-section">
+      <span class="collection-hero__eyebrow">Collection</span>
+      <h1 class="collection-hero__title">{{ collection.title }}</h1>
+      {% if collection_summary != blank %}
+        <p class="collection-hero__desc">{{ collection_summary }}</p>
       {% endif %}
-      <div class="main-collection-intro__stat">
-        <span>Collection mood</span>
-        <strong>{{ collection.products_count }} thoughtfully presented styles</strong>
+      <span class="collection-hero__count">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        {{ collection.products_count }} products
+      </span>
+    </div>
+
+    <div class="collection-layout">
+      <aside class="collection-sidebar">
+        {% content_for 'block',
+          type: 'filters',
+          id: 'filters',
+          results: collection,
+          results_size: collection.products_count
+        %}
+      </aside>
+
+      <div class="collection-content">
+        <results-list
+          class="collection-main"
+          section-id="{{ section.id }}"
+          infinite-scroll="{{ section.settings.enable_infinite_scroll }}"
+        >
+          {% assign products_per_page = 24 %}
+          {% if section.settings.enable_infinite_scroll == false %}
+            {% assign products_per_page = section.settings.products_per_page %}
+          {% endif %}
+
+          {% paginate collection.products by products_per_page %}
+            {% capture product_cards %}
+              {% for product in collection.products %}
+                <li
+                  id="{{ section.id }}-{{ product.id }}"
+                  class="product-grid__item"
+                  data-page="{{ paginate.current_page }}"
+                  data-product-id="{{ product.id }}"
+                  ref="cards[]"
+                >
+                  {% render 'product-card', product: product %}
+                </li>
+              {% endfor %}
+            {% endcapture %}
+
+            {% render 'product-grid',
+              section: section,
+              paginate: paginate,
+              products: collection.products,
+              children: product_cards,
+              enable_infinite_scroll: section.settings.enable_infinite_scroll
+            %}
+          {% endpaginate %}
+        </results-list>
       </div>
     </div>
   </div>
-
-  <div
-    class="collection-wrapper grid gap-style{% if section.settings.product_grid_width == 'full-width' %} collection-wrapper--grid-full-width{% endif %}"
-  >
-    {% content_for 'block',
-      type: 'filters',
-      id: 'filters',
-      results: collection,
-      results_size: collection.products_count
-    %}
-
-    {% assign products_per_page = 24 %}
-
-    {% if section.settings.enable_infinite_scroll == false %}
-      {% assign products_per_page = section.settings.products_per_page %}
-    {% endif %}
-
-    {% paginate collection.products by products_per_page %}
-      {% capture children %}
-        {% for product in collection.products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% # theme-check-disable %}
-            {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
-            {% # theme-check-enable %}
-          </li>
-        {% endfor %}
-      {% endcapture %}
-
-      {% render 'product-grid',
-        section: section,
-        children: children,
-        products: collection.products,
-        paginate: paginate,
-        enable_infinite_scroll: section.settings.enable_infinite_scroll
-      %}
-    {% endpaginate %}
-  </div>
-</results-list>
-
-{% stylesheet %}
-  .main-collection-grid {
-    grid-column: var(--grid-column--mobile);
-
-    @media screen and (min-width: 750px) {
-      grid-column: var(--grid-column--desktop);
-    }
-  }
-
-  .main-collection-intro {
-    display: grid;
-    gap: clamp(1.5rem, 3vw, 2.75rem);
-    padding: clamp(1rem, 2vw, 1.5rem) var(--page-margin) clamp(1.5rem, 3vw, 2rem);
-  }
-
-  .main-collection-intro__copy {
-    display: grid;
-    align-content: start;
-    gap: 0.9rem;
-    max-width: 42rem;
-  }
-
-  .main-collection-intro__eyebrow,
-  .main-collection-intro__pills span,
-  .main-collection-intro__stat span {
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    border-radius: 999px;
-    background: rgb(var(--color-foreground-rgb) / 0.08);
-    color: rgb(var(--color-foreground-rgb) / 0.72);
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.48rem 0.82rem;
-  }
-
-  .main-collection-intro__title,
-  .main-collection-intro__summary {
-    margin: 0;
-  }
-
-  .main-collection-intro__title {
-    font-size: clamp(2.4rem, 4vw, 4.6rem);
-    line-height: 0.94;
-    max-width: 10ch;
-  }
-
-  .main-collection-intro__summary {
-    font-size: 1rem;
-    line-height: 1.75;
-    color: rgb(var(--color-foreground-rgb) / 0.74);
-  }
-
-  .main-collection-intro__pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .main-collection-intro__visual {
-    position: relative;
-    overflow: hidden;
-    border-radius: 32px;
-    min-height: 22rem;
-    background:
-      radial-gradient(circle at top left, rgb(255 255 255 / 0.82), transparent 38%),
-      #f4ebe2;
-    box-shadow: 0 24px 60px rgb(25 24 18 / 0.12);
-  }
-
-  .main-collection-intro__image {
-    width: 100%;
-    height: 100%;
-    min-height: 22rem;
-    object-fit: cover;
-  }
-
-  .main-collection-intro__stat {
-    display: grid;
-    gap: 0.5rem;
-    position: absolute;
-    inset: auto 1rem 1rem auto;
-    max-width: 15rem;
-    padding: 1rem 1.1rem;
-    border-radius: 24px;
-    background: rgb(var(--color-background-rgb) / 0.88);
-    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
-    backdrop-filter: blur(16px);
-  }
-
-  .main-collection-intro__stat strong {
-    line-height: 1.4;
-    font-size: 1.05rem;
-  }
-
-  .product-grid-container .product-grid__item,
-  .product-grid-container .product-card,
-  .product-grid-container .product-card__content,
-  .product-grid-container .product-grid__card {
-    height: 100%;
-  }
-
-  .product-grid-container .product-grid__card {
-    display: grid;
-    align-content: start;
-    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
-    border-radius: 28px;
-    padding: 0.85rem 0.85rem 1.1rem;
-    background:
-      radial-gradient(circle at top left, rgb(255 255 255 / 0.8), transparent 38%),
-      linear-gradient(180deg, rgb(var(--color-background-rgb) / 1), rgb(var(--color-background-rgb) / 0.94));
-    box-shadow: 0 16px 40px rgb(18 18 14 / 0.06);
-  }
-
-  .product-grid-container .card-gallery {
-    overflow: hidden;
-    border-radius: 22px;
-    background: #f7efe6;
-  }
-
-  .product-grid-container .card-gallery img {
-    transition: transform 0.45s ease;
-  }
-
-  .product-grid-container .product-card:hover .card-gallery img {
-    transform: scale(1.04);
-  }
-
-  .product-grid-container product-price {
-    margin-top: auto;
-  }
-
-  .product-grid-container .text-block.rte p,
-  .product-grid-container product-price .price {
-    margin: 0;
-  }
-
-  @media screen and (min-width: 990px) {
-    .main-collection-intro {
-      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-      align-items: center;
-    }
-  }
-{% endstylesheet %}
+</section>
 
 {% schema %}
 {
@@ -351,7 +148,7 @@
           "label": "t:options.extra_large"
         }
       ],
-      "default": "medium",
+      "default": "small",
       "visible_if": "{{ section.settings.layout_type == 'grid' }}"
     },
     {
@@ -404,7 +201,7 @@
           "label": "t:options.full"
         }
       ],
-      "default": "centered"
+      "default": "full-width"
     },
     {
       "type": "checkbox",
@@ -432,26 +229,6 @@
       "step": 1,
       "unit": "px",
       "default": 16
-    },
-    {
-      "type": "range",
-      "id": "padding-inline-start",
-      "label": "t:settings.left_padding",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "padding-inline-end",
-      "label": "t:settings.right_padding",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
     },
     {
       "type": "header",
