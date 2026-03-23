@@ -1,0 +1,704 @@
+{% liquid
+  assign featured_collection = collections[section.settings.featured_collection]
+
+  if featured_collection == blank
+    assign featured_collection = collections['all']
+  endif
+
+  assign featured_products = featured_collection.products
+  assign featured_link = section.settings.featured_link
+
+  if featured_link == blank
+    if featured_collection != blank
+      assign featured_link = featured_collection.url
+    else
+      assign featured_link = routes.all_products_collection_url
+    endif
+  endif
+
+  assign hero_primary_link = section.settings.hero_primary_link | default: featured_link
+  assign hero_secondary_link = section.settings.hero_secondary_link | default: featured_link
+  assign story_button_link = section.settings.story_button_link | default: featured_link
+  assign final_button_link = section.settings.final_button_link | default: featured_link
+%}
+
+<section class="home-premium color-{{ section.settings.color_scheme }}">
+  <div class="home-premium__hero">
+    {% if section.settings.hero_image != blank %}
+      {{
+        section.settings.hero_image
+        | image_url: width: 2400
+        | image_tag:
+          widths: '960, 1440, 1800, 2200, 2600',
+          sizes: '100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          class: 'home-premium__hero-image',
+          alt: section.settings.hero_heading
+      }}
+    {% endif %}
+
+    <div class="home-premium__hero-overlay"></div>
+
+    <div class="home-premium__inner home-premium__hero-inner">
+      <div class="home-premium__hero-content">
+        {% if section.settings.hero_eyebrow != blank %}
+          <p class="home-premium__eyebrow home-premium__eyebrow--hero">{{ section.settings.hero_eyebrow }}</p>
+        {% endif %}
+
+        {% if section.settings.hero_heading != blank %}
+          <h1 class="home-premium__hero-heading">{{ section.settings.hero_heading }}</h1>
+        {% endif %}
+
+        {% if section.settings.hero_text != blank %}
+          <div class="home-premium__hero-text rte">
+            {{ section.settings.hero_text }}
+          </div>
+        {% endif %}
+
+        <div class="home-premium__hero-actions">
+          {% if section.settings.hero_primary_label != blank %}
+            <a class="primary-btn home-premium__button home-premium__button--primary" href="{{ hero_primary_link }}">
+              {{ section.settings.hero_primary_label }}
+            </a>
+          {% endif %}
+
+          {% if section.settings.hero_secondary_label != blank %}
+            <a class="secondary-btn home-premium__button home-premium__button--secondary" href="{{ hero_secondary_link }}">
+              {{ section.settings.hero_secondary_label }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-premium__inner">
+    <section class="home-premium__section home-premium__categories">
+      <div class="home-premium__section-header home-premium__section-header--center">
+        {% if section.settings.categories_eyebrow != blank %}
+          <p class="home-premium__eyebrow">{{ section.settings.categories_eyebrow }}</p>
+        {% endif %}
+
+        {% if section.settings.categories_heading != blank %}
+          <h2 class="home-premium__section-heading">{{ section.settings.categories_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.categories_text != blank %}
+          <p class="home-premium__section-copy">{{ section.settings.categories_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="home-premium__category-grid">
+        {% assign category_rendered = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type != 'category' %}
+            {% continue %}
+          {% endif %}
+
+          {% assign fallback_product = featured_products[category_rendered] %}
+          {% assign card_image = block.settings.image %}
+          {% if card_image == blank and fallback_product != blank %}
+            {% assign card_image = fallback_product.featured_image %}
+          {% endif %}
+          {% assign card_link = block.settings.link | default: featured_link %}
+
+          <a
+            class="home-premium__category-card card"
+            href="{{ card_link }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="home-premium__category-media">
+              {% if card_image != blank %}
+                {{
+                  card_image
+                  | image_url: width: 900
+                  | image_tag:
+                    widths: '360, 540, 720, 900',
+                    sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw',
+                    loading: 'lazy',
+                    class: 'home-premium__category-image',
+                    alt: block.settings.title
+                }}
+              {% endif %}
+            </div>
+
+            <div class="home-premium__category-content">
+              <h3 class="home-premium__category-title">{{ block.settings.title }}</h3>
+              {% if block.settings.subtitle != blank %}
+                <p class="home-premium__category-copy">{{ block.settings.subtitle }}</p>
+              {% endif %}
+              <span class="home-premium__category-cta">{{ block.settings.button_label | default: 'Shop now' }}</span>
+            </div>
+          </a>
+
+          {% assign category_rendered = category_rendered | plus: 1 %}
+          {% if category_rendered >= 4 %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+
+        {% if category_rendered == 0 %}
+          {% for product in featured_products limit: 4 %}
+            <a class="home-premium__category-card card" href="{{ product.url }}">
+              <div class="home-premium__category-media">
+                {% if product.featured_image != blank %}
+                  {{
+                    product.featured_image
+                    | image_url: width: 900
+                    | image_tag:
+                      widths: '360, 540, 720, 900',
+                      sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw',
+                      loading: 'lazy',
+                      class: 'home-premium__category-image',
+                      alt: product.title
+                  }}
+                {% endif %}
+              </div>
+              <div class="home-premium__category-content">
+                <h3 class="home-premium__category-title">{{ product.title }}</h3>
+                <p class="home-premium__category-copy">{{ product.price | money }}</p>
+                <span class="home-premium__category-cta">Shop now</span>
+              </div>
+            </a>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="home-premium__section home-premium__featured">
+      <div class="home-premium__section-header">
+        <div>
+          {% if section.settings.featured_eyebrow != blank %}
+            <p class="home-premium__eyebrow">{{ section.settings.featured_eyebrow }}</p>
+          {% endif %}
+
+          {% if section.settings.featured_heading != blank %}
+            <h2 class="home-premium__section-heading">{{ section.settings.featured_heading }}</h2>
+          {% endif %}
+        </div>
+
+        {% if section.settings.featured_text != blank %}
+          <p class="home-premium__section-copy home-premium__section-copy--compact">{{ section.settings.featured_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="home-premium__product-grid">
+        {% for product in featured_products limit: 4 %}
+          {% liquid
+            assign card_variant = product.selected_or_first_available_variant
+            assign card_price = card_variant.price | default: product.price
+            assign card_compare_at_price = card_variant.compare_at_price
+          %}
+
+          <article class="home-premium__product-card">
+            <a class="home-premium__product-media" href="{{ product.url }}">
+              {% if product.featured_image != blank %}
+                {{
+                  product.featured_image
+                  | image_url: width: 900
+                  | image_tag:
+                    widths: '360, 540, 720, 900',
+                    sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw',
+                    loading: 'lazy',
+                    class: 'home-premium__product-image',
+                    alt: product.title
+                }}
+              {% endif %}
+
+              {% if product.available == false %}
+                <span class="home-premium__product-badge">Sold out</span>
+              {% elsif card_compare_at_price > card_price %}
+                {% assign sale_percent = card_compare_at_price | minus: card_price | times: 100.0 | divided_by: card_compare_at_price | round %}
+                <span class="home-premium__product-badge">Save {{ sale_percent }}%</span>
+              {% endif %}
+            </a>
+
+            <div class="home-premium__product-content">
+              <h3 class="home-premium__product-title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+
+              <div class="home-premium__product-price">
+                <span class="home-premium__product-price-current">{{ card_price | money }}</span>
+                {% if card_compare_at_price > card_price %}
+                  <span class="home-premium__product-price-compare">{{ card_compare_at_price | money }}</span>
+                {% endif %}
+              </div>
+
+              {% form 'product', product, class: 'home-premium__quick-add-form' %}
+                <input type="hidden" name="id" value="{{ card_variant.id }}">
+                <button
+                  type="submit"
+                  class="home-premium__quick-add"
+                  {% if card_variant == blank or card_variant.available == false %}
+                    disabled
+                  {% endif %}
+                >
+                  {% if product.available %}
+                    + Quick Add
+                  {% else %}
+                    Sold out
+                  {% endif %}
+                </button>
+              {% endform %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <section class="home-premium__trust-strip">
+    <div class="home-premium__inner">
+      <p class="home-premium__trust-heading">Trusted by parents</p>
+      <div class="trust-strip">
+        <article class="home-premium__trust-item">
+          <span class="home-premium__trust-icon">{{ 'icon-available.svg' | inline_asset_content }}</span>
+          <div>
+            <h3>Free Shipping</h3>
+            <p>Calm delivery on every essentials order.</p>
+          </div>
+        </article>
+        <article class="home-premium__trust-item">
+          <span class="home-premium__trust-icon">{{ 'icon-reset.svg' | inline_asset_content }}</span>
+          <div>
+            <h3>Free Returns</h3>
+            <p>Easy exchanges if you need a better fit.</p>
+          </div>
+        </article>
+        <article class="home-premium__trust-item">
+          <span class="home-premium__trust-icon">{{ 'icon-checkmark.svg' | inline_asset_content }}</span>
+          <div>
+            <h3>Safe for Babies</h3>
+            <p>Gentle, comfort-first picks for delicate skin.</p>
+          </div>
+        </article>
+        <article class="home-premium__trust-item">
+          <span class="home-premium__trust-icon">{{ 'icon-info.svg' | inline_asset_content }}</span>
+          <div>
+            <h3>Premium Cotton</h3>
+            <p>Soft-touch textures chosen for everyday care.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="home-premium__inner">
+    <section class="home-premium__section home-premium__story">
+      <div class="home-premium__story-media">
+        {% if section.settings.story_image != blank %}
+          {{
+            section.settings.story_image
+            | image_url: width: 1600
+            | image_tag:
+              widths: '640, 960, 1280, 1600',
+              sizes: '(min-width: 990px) 50vw, 100vw',
+              loading: 'lazy',
+              class: 'home-premium__story-image',
+              alt: section.settings.story_heading
+          }}
+        {% endif %}
+      </div>
+
+      <div class="home-premium__story-content">
+        {% if section.settings.story_eyebrow != blank %}
+          <p class="home-premium__eyebrow">{{ section.settings.story_eyebrow }}</p>
+        {% endif %}
+
+        {% if section.settings.story_heading != blank %}
+          <h2 class="home-premium__section-heading">{{ section.settings.story_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.story_text != blank %}
+          <div class="home-premium__section-copy rte">
+            {{ section.settings.story_text }}
+          </div>
+        {% endif %}
+
+        {% if section.settings.story_button_label != blank %}
+          <a class="home-premium__story-button" href="{{ story_button_link }}">
+            {{ section.settings.story_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="home-premium__section home-premium__social-proof">
+      <div class="home-premium__section-header home-premium__section-header--center">
+        {% if section.settings.social_eyebrow != blank %}
+          <p class="home-premium__eyebrow">{{ section.settings.social_eyebrow }}</p>
+        {% endif %}
+
+        {% if section.settings.social_heading != blank %}
+          <h2 class="home-premium__section-heading">{{ section.settings.social_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.social_text != blank %}
+          <p class="home-premium__section-copy">{{ section.settings.social_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="home-premium__reviews">
+        {% assign testimonial_rendered = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type != 'testimonial' %}
+            {% continue %}
+          {% endif %}
+
+          <article class="home-premium__review-card" {{ block.shopify_attributes }}>
+            <div class="home-premium__review-rating">
+              <div class="home-premium__review-dots" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span>Rated 5/5</span>
+            </div>
+            <p class="home-premium__review-quote">{{ block.settings.quote }}</p>
+            <div class="home-premium__review-meta">
+              <strong>{{ block.settings.author }}</strong>
+              {% if block.settings.meta != blank %}
+                <span>{{ block.settings.meta }}</span>
+              {% endif %}
+            </div>
+          </article>
+
+          {% assign testimonial_rendered = testimonial_rendered | plus: 1 %}
+          {% if testimonial_rendered >= 3 %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+
+        {% if testimonial_rendered == 0 %}
+          <article class="home-premium__review-card">
+            <div class="home-premium__review-rating">
+              <div class="home-premium__review-dots" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span>Rated 5/5</span>
+            </div>
+            <p class="home-premium__review-quote">"Everything feels softer, more thoughtful, and easier to gift. It is the first place I check for everyday essentials."</p>
+            <div class="home-premium__review-meta">
+              <strong>Anaya</strong>
+              <span>Parent of two</span>
+            </div>
+          </article>
+          <article class="home-premium__review-card">
+            <div class="home-premium__review-rating">
+              <div class="home-premium__review-dots" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span>Rated 5/5</span>
+            </div>
+            <p class="home-premium__review-quote">"The quality feels premium without being fussy, and the collection is easy to browse when I only have a few minutes."</p>
+            <div class="home-premium__review-meta">
+              <strong>Meera</strong>
+              <span>Newborn essentials edit</span>
+            </div>
+          </article>
+          <article class="home-premium__review-card">
+            <div class="home-premium__review-rating">
+              <div class="home-premium__review-dots" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span>Rated 5/5</span>
+            </div>
+            <p class="home-premium__review-quote">"From gifting to daily basics, the details feel trustworthy and calm. The quick add buttons make repeat shopping simple."</p>
+            <div class="home-premium__review-meta">
+              <strong>Rhea</strong>
+              <span>Returning customer</span>
+            </div>
+          </article>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="home-premium__section home-premium__final-cta">
+      <div class="home-premium__final-cta-panel">
+        {% if section.settings.final_heading != blank %}
+          <h2 class="home-premium__final-heading">{{ section.settings.final_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.final_text != blank %}
+          <p class="home-premium__section-copy home-premium__section-copy--light">{{ section.settings.final_text }}</p>
+        {% endif %}
+
+        {% if section.settings.final_button_label != blank %}
+          <a class="primary-btn home-premium__button home-premium__button--primary" href="{{ final_button_link }}">
+            {{ section.settings.final_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home premium landing",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_eyebrow",
+      "label": "Hero eyebrow",
+      "default": "Soft essentials for tiny adventures"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Hero heading",
+      "default": "Comfort in Every Little Step"
+    },
+    {
+      "type": "richtext",
+      "id": "hero_text",
+      "label": "Hero text",
+      "default": "<p>Give your baby the purest comfort and joy. Browse our collection of soft, organic essentials, made for cuddles and play.</p>"
+    },
+    {
+      "type": "text",
+      "id": "hero_primary_label",
+      "label": "Primary button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "hero_primary_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "hero_secondary_label",
+      "label": "Secondary button label",
+      "default": "Browse Collection"
+    },
+    {
+      "type": "url",
+      "id": "hero_secondary_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "text",
+      "id": "categories_eyebrow",
+      "label": "Categories eyebrow",
+      "default": "Shop by category"
+    },
+    {
+      "type": "text",
+      "id": "categories_heading",
+      "label": "Categories heading",
+      "default": "Explore essentials loved by parents for their little ones"
+    },
+    {
+      "type": "textarea",
+      "id": "categories_text",
+      "label": "Categories text",
+      "default": "Real imagery, clear labels, and quick shopping paths for everyday comfort."
+    },
+    {
+      "type": "text",
+      "id": "featured_eyebrow",
+      "label": "Featured eyebrow",
+      "default": "Featured products"
+    },
+    {
+      "type": "text",
+      "id": "featured_heading",
+      "label": "Featured heading",
+      "default": "Soft picks for every little routine"
+    },
+    {
+      "type": "textarea",
+      "id": "featured_text",
+      "label": "Featured text",
+      "default": "A curated row of comfort-first favorites with quick add actions for faster shopping."
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Featured collection"
+    },
+    {
+      "type": "url",
+      "id": "featured_link",
+      "label": "Fallback shop link"
+    },
+    {
+      "type": "image_picker",
+      "id": "story_image",
+      "label": "Story image"
+    },
+    {
+      "type": "text",
+      "id": "story_eyebrow",
+      "label": "Story eyebrow",
+      "default": "Our story"
+    },
+    {
+      "type": "text",
+      "id": "story_heading",
+      "label": "Story heading",
+      "default": "Gentle care for sweet comfort"
+    },
+    {
+      "type": "richtext",
+      "id": "story_text",
+      "label": "Story text",
+      "default": "<p>Wrap your little one in breathable layers chosen for softness, easy care, and calm everyday moments. Thoughtful essentials help parents move from browsing to checkout with confidence.</p>"
+    },
+    {
+      "type": "text",
+      "id": "story_button_label",
+      "label": "Story button label",
+      "default": "Explore Our Story"
+    },
+    {
+      "type": "url",
+      "id": "story_button_link",
+      "label": "Story button link"
+    },
+    {
+      "type": "text",
+      "id": "social_eyebrow",
+      "label": "Social proof eyebrow",
+      "default": "Why parents choose us"
+    },
+    {
+      "type": "text",
+      "id": "social_heading",
+      "label": "Social proof heading",
+      "default": "Loved by parents just like you"
+    },
+    {
+      "type": "textarea",
+      "id": "social_text",
+      "label": "Social proof text",
+      "default": "Reviews that reinforce softness, trust, and simple everyday shopping."
+    },
+    {
+      "type": "text",
+      "id": "final_heading",
+      "label": "Final CTA heading",
+      "default": "Give your baby the softest comfort"
+    },
+    {
+      "type": "textarea",
+      "id": "final_text",
+      "label": "Final CTA text",
+      "default": "Shop premium daily essentials designed for calm routines, gifting, and gentle little moments."
+    },
+    {
+      "type": "text",
+      "id": "final_button_label",
+      "label": "Final CTA button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "final_button_link",
+      "label": "Final CTA button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Everyday"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Soft essentials picked for easy daily shopping."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Everything feels softer, more thoughtful, and easier to gift."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author",
+          "default": "Parent review"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "Meta",
+          "default": "Verified customer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home premium landing",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
