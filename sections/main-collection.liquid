@@ -54,16 +54,65 @@
     </div>
 
     <div class="collection-layout">
-      <aside class="collection-sidebar">
-        {% content_for 'block',
-          type: 'filters',
-          id: 'filters',
-          results: collection,
-          results_size: collection.products_count
-        %}
-      </aside>
-
       <div class="collection-content">
+        <div class="collection-toolbar">
+          <button class="filter-btn" onclick="toggleFilterDrawer()">Filter</button>
+        </div>
+
+        <div class="drawer-overlay" onclick="toggleFilterDrawer()"></div>
+        <div class="filter-drawer" id="filter-drawer">
+          <div class="filter-drawer-header">
+            <h3>Filter & Sort</h3>
+            <button class="close-drawer" onclick="toggleFilterDrawer()">✕</button>
+          </div>
+          <div class="filter-drawer-body">
+            <p style="display:none">Filters count: {{ collection.filters.size }}</p>
+            <form method="get" action="{{ collection.url }}" id="CollectionFiltersForm">
+              {%- for filter in collection.filters -%}
+                <div class="filter-group">
+                  <h4>{{ filter.label }}</h4>
+                  {% case filter.type %}
+                    {% when 'list' %}
+                      {% for value in filter.values %}
+                        <label class="filter-option">
+                          <input type="checkbox" 
+                            name="{{ value.param_name }}" 
+                            value="{{ value.value }}"
+                            {% if value.active %}checked{% endif %}>
+                          <span>{{ value.label }}</span>
+                          <span class="filter-count">({{ value.count }})</span>
+                        </label>
+                      {% endfor %}
+                    {% when 'price_range' %}
+                      <div class="price-range">
+                        <input type="number" 
+                          name="filter.v.price_min" 
+                          value="{{ filter.min_value.value }}" 
+                          placeholder="Min">
+                        <span>-</span>
+                        <input type="number" 
+                          name="filter.v.price_max" 
+                          value="{{ filter.max_value.value }}" 
+                          placeholder="Max">
+                      </div>
+                    {% when 'boolean' %}
+                      <label class="filter-option">
+                        <input type="checkbox" 
+                          name="{{ filter.param_name }}" 
+                          value="1"
+                          {% if filter.active_value %}checked{% endif %}>
+                        <span>{{ filter.label }}</span>
+                      </label>
+                  {% endcase %}
+                </div>
+              {%- endfor -%}
+            </form>
+          </div>
+          <div class="filter-drawer-footer">
+            <button class="apply-btn" onclick="document.getElementById('CollectionFiltersForm').submit()">Apply</button>
+          </div>
+        </div>
+
         <results-list
           class="collection-main"
           section-id="{{ section.id }}"
@@ -98,6 +147,17 @@
             %}
           {% endpaginate %}
         </results-list>
+
+        <script>
+          function toggleFilterDrawer() {
+            var drawer = document.getElementById('filter-drawer');
+            var overlay = document.querySelector('.drawer-overlay');
+            if (drawer && overlay) {
+              drawer.classList.toggle('active');
+              overlay.classList.toggle('active');
+            }
+          }
+        </script>
       </div>
     </div>
   </div>
